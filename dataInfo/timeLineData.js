@@ -35934,8 +35934,8 @@ data = {
     "timestamp": 1533954
     }
     ],
-    "gameId": 6134432920,
-    "participants": [
+    "gameId": 6134432920, // 게임 아이디 KR_
+    "participants": [ // 소환사 리스트
     {
     "participantId": 1,
     "puuid": "g6xZfY39lY8hL_vPWrrNIs6mMwFZ1-cyeneLe_QZC5Wyx8Voc_CyIn1OyO7v5ocxpRkYeboOiyJOYw"
