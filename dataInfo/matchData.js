@@ -144,66 +144,66 @@ data = {
                     "wardTakedownsBefore20M": 0,
                     "wardsGuarded": 0
                 },
-                "champExperience": 14090, 
-                "champLevel": 15,
+                "champExperience": 14090, // 인게임 획득 경험치 양?
+                "champLevel": 15, // 챔피언레벨 
                 "championId": 122,
                 "championName": "Darius",
-                "championTransform": 0,
-                "consumablesPurchased": 2,
-                "damageDealtToBuildings": 14977,
-                "damageDealtToObjectives": 17496,
-                "damageDealtToTurrets": 14977,
-                "damageSelfMitigated": 26192,
-                "deaths": 7,
-                "detectorWardsPlaced": 0,
-                "doubleKills": 2,
-                "dragonKills": 0,
-                "eligibleForProgression": true,
-                "firstBloodAssist": false,
-                "firstBloodKill": false,
-                "firstTowerAssist": false,
-                "firstTowerKill": true,
-                "gameEndedInEarlySurrender": false,
-                "gameEndedInSurrender": true,
-                "goldEarned": 13299,
-                "goldSpent": 12108,
-                "individualPosition": "TOP",
-                "inhibitorKills": 1,
-                "inhibitorTakedowns": 1,
-                "inhibitorsLost": 0,
-                "item0": 1054,
+                "championTransform": 0, //이 필드는 현재 Kayn의 변환에만 사용됩니다. (법적 값: 0 - 없음, 1 - 슬레이어, 2 - 어쌔신)
+                "consumablesPurchased": 2, // 소모품 구입 횟수 소모품의 기준이 뭐지.. 물약? 영약?
+                "damageDealtToBuildings": 14977, // 건물 데미지 라는데 포탑+넥서스+억제기?
+                "damageDealtToObjectives": 17496, // 오브젝트 딜 바론,용,전령?
+                "damageDealtToTurrets": 14977, // 포탑에 입힌 데미지?
+                "damageSelfMitigated": 26192, // 데미지 자가 완화???
+                "deaths": 7, // 데스
+                "detectorWardsPlaced": 0, // 감지기 와드 배치 라는데 op.gg에선 제어와드 1로 나온다 다른건가
+                "doubleKills": 2, // 더블킬횟수
+                "dragonKills": 0, // 용 막타
+                "eligibleForProgression": true, // 승급자격???? 랭크 승급전말하는건가
+                "firstBloodAssist": false, // 퍼블 어시
+                "firstBloodKill": false, // 퍼블 킬
+                "firstTowerAssist": false, // 첫 포탑 어시
+                "firstTowerKill": true, // 첫 포탑 킬
+                "gameEndedInEarlySurrender": false, // 15분서렌?
+                "gameEndedInSurrender": true, // 서렌 친사람?
+                "goldEarned": 13299, // 몇골벌었는지
+                "goldSpent": 12108, // 몇골 썻는지
+                "individualPosition": "TOP", // IndividualPosition과 teamPosition은 모두 게임 서버에서 계산하며 플레이어가 플레이할 가능성이 가장 높은 위치의 다른 버전입니다. 개인 위치는 플레이어가 실제로 다른 위치와 분리되어 플레이한 위치에 대한 가장 좋은 추측입니다. teamPosition은 각 팀에 1명의 최고 선수, 1명의 정글, 1명의 미들 등을 포함해야 한다는 제약을 추가하면 플레이어가 실제로 플레이한 위치에 대한 가장 좋은 추측입니다. 일반적으로 개인 위치 필드보다 teamPosition 필드를 사용하는 것이 좋습니다.
+                "inhibitorKills": 1, // 억제기 파괴
+                "inhibitorTakedowns": 1, // 킬이랑 무슨차이?
+                "inhibitorsLost": 0, // 억제기 파괴당한횟수??
+                "item0": 1054, 
                 "item1": 3078,
                 "item2": 2421,
                 "item3": 6333,
                 "item4": 3156,
                 "item5": 3111,
                 "item6": 3340,
-                "itemsPurchased": 18,
-                "killingSprees": 3,
-                "kills": 8,
-                "lane": "TOP",
-                "largestCriticalStrike": 0,
-                "largestKillingSpree": 2,
-                "largestMultiKill": 2,
-                "longestTimeSpentLiving": 439,
-                "magicDamageDealt": 0,
-                "magicDamageDealtToChampions": 0,
-                "magicDamageTaken": 8090,
-                "neutralMinionsKilled": 4,
-                "nexusKills": 0,
-                "nexusLost": 0,
-                "nexusTakedowns": 0,
-                "objectivesStolen": 0,
-                "objectivesStolenAssists": 0,
-                "participantId": 1,
-                "pentaKills": 0,
-                "perks": {
+                "itemsPurchased": 18, // 아이템 구매횟수
+                "killingSprees": 3, // 연속킬 횟수
+                "kills": 8, // 킬 수
+                "lane": "TOP", // 탑라인
+                "largestCriticalStrike": 0, // 최대 크리뎀?
+                "largestKillingSpree": 2, // 최대 연속킬 2킬 하고 1데스?
+                "largestMultiKill": 2, // 위에거랑 무슨차이??
+                "longestTimeSpentLiving": 439, // 최대 생존시간 unix 타임인가 이거도
+                "magicDamageDealt": 0, // 마딜
+                "magicDamageDealtToChampions": 0, // 챔피언에게 가한 마딜
+                "magicDamageTaken": 8090, // 받은 마법피해량
+                "neutralMinionsKilled": 4, // 중립적 미니언 처치 라는데 정글몹 처치 횟수인가
+                "nexusKills": 0, // 넥서스 막타
+                "nexusLost": 0, // 넥서스 파괴당한?
+                "nexusTakedowns": 0, // 위에거랑 뭔차이?
+                "objectivesStolen": 0, // 오브젝트 스틸 
+                "objectivesStolenAssists": 0, // 오브젝트 스틸 어시스트
+                "participantId": 1, // 참가자 ID
+                "pentaKills": 0, // 펜타킬 횟수
+                "perks": {  // 스텟 찍은거 말하는거같음 
                     "statPerks": {
-                        "defense": 5003,
+                        "defense": 5003, 
                         "flex": 5008,
                         "offense": 5005
                     },
-                    "styles": [
+                    "styles": [ // 메인 룬
                         {
                             "description": "primaryStyle",
                             "selections": [
@@ -236,7 +236,7 @@ data = {
                         },
                         {
                             "description": "subStyle",
-                            "selections": [
+                            "selections": [ // 보조 룬
                                 {
                                     "perk": 8473,
                                     "var1": 451,
@@ -254,55 +254,55 @@ data = {
                         }
                     ]
                 },
-                "physicalDamageDealt": 135366,
-                "physicalDamageDealtToChampions": 15867,
-                "physicalDamageTaken": 12427,
-                "profileIcon": 4074,
-                "puuid": "g6xZfY39lY8hL_vPWrrNIs6mMwFZ1-cyeneLe_QZC5Wyx8Voc_CyIn1OyO7v5ocxpRkYeboOiyJOYw",
-                "quadraKills": 0,
-                "riotIdName": "",
-                "riotIdTagline": "",
-                "role": "SOLO",
-                "sightWardsBoughtInGame": 0,
-                "spell1Casts": 59,
-                "spell2Casts": 91,
-                "spell3Casts": 14,
-                "spell4Casts": 9,
-                "summoner1Casts": 6,
-                "summoner1Id": 6,
-                "summoner2Casts": 2,
-                "summoner2Id": 4,
-                "summonerId": "AypxDoIYVLkIsUrzGpDlgrH9P--4EpE2EB-yC8U467r4mCE",
-                "summonerLevel": 471,
-                "summonerName": "말벌잡는에프킬라",
-                "teamEarlySurrendered": false,
-                "teamId": 100,
-                "teamPosition": "TOP",
-                "timeCCingOthers": 18,
-                "timePlayed": 1533,
-                "totalDamageDealt": 142659,
-                "totalDamageDealtToChampions": 21368,
-                "totalDamageShieldedOnTeammates": 0,
-                "totalDamageTaken": 24802,
-                "totalHeal": 4684,
-                "totalHealsOnTeammates": 0,
-                "totalMinionsKilled": 186,
-                "totalTimeCCDealt": 135,
-                "totalTimeSpentDead": 208,
-                "totalUnitsHealed": 1,
-                "tripleKills": 0,
-                "trueDamageDealt": 7292,
-                "trueDamageDealtToChampions": 5500,
-                "trueDamageTaken": 4284,
-                "turretKills": 5,
-                "turretTakedowns": 6,
-                "turretsLost": 3,
-                "unrealKills": 0,
-                "visionScore": 6,
-                "visionWardsBoughtInGame": 1,
-                "wardsKilled": 0,
-                "wardsPlaced": 4,
-                "win": true
+                "physicalDamageDealt": 135366, // 가한 물리피해
+                "physicalDamageDealtToChampions": 15867, // 챔피언에게 가한 물리피해
+                "physicalDamageTaken": 12427, // 받은 물리피해
+                "profileIcon": 4074, // 소환사 아이콘
+                "puuid": "g6xZfY39lY8hL_vPWrrNIs6mMwFZ1-cyeneLe_QZC5Wyx8Voc_CyIn1OyO7v5ocxpRkYeboOiyJOYw", // 소환사 puu 아이디
+                "quadraKills": 0, // 쿼드라킬
+                "riotIdName": "", // 라이엇 계정이름???
+                "riotIdTagline": "", // 라이엇 태그라인 ??
+                "role": "SOLO", // 솔로 듀오 구분인지 솔랭 자랭 구분인지 햇갈림 아마 솔로 큐 말하는거같음
+                "sightWardsBoughtInGame": 0, // 시야와드 구입횟수인데 이제는 안쓰는 항목일듯 제어와드밖에 못사서
+                "spell1Casts": 59, // q스킬 사용횟수 ??
+                "spell2Casts": 91, // w스킬 사용횟수??
+                "spell3Casts": 14, // e스킬 사용횟수??
+                "spell4Casts": 9, // 궁극기 사용횟수??
+                "summoner1Casts": 6, // 소환사 스펠 1번 사용횟수??
+                "summoner1Id": 6, // 스펠 종류
+                "summoner2Casts": 2, // 소환사 스펠 2번 사용횟수??
+                "summoner2Id": 4, // 스펠 종류
+                "summonerId": "AypxDoIYVLkIsUrzGpDlgrH9P--4EpE2EB-yC8U467r4mCE", // 소환사 encryt 아이디?
+                "summonerLevel": 471, // 소환사 레벨
+                "summonerName": "말벌잡는에프킬라", // 소환사 닉
+                "teamEarlySurrendered": false, // 팀 조기 항복 15분서렌말하는건가 아까 위에도 있던거같은데
+                "teamId": 100, // 블루팀
+                "teamPosition": "TOP", // 팀 포지션 lane 항목이랑은 무슨차이?? 신청했을때 뭘로 신청했는지 인건가 IndividualPosition과 teamPosition은 모두 게임 서버에서 계산하며 플레이어가 플레이할 가능성이 가장 높은 위치의 다른 버전입니다. 개인 위치는 플레이어가 실제로 다른 위치와 분리되어 플레이한 위치에 대한 가장 좋은 추측입니다. teamPosition은 각 팀에 1명의 최고 선수, 1명의 정글, 1명의 미들 등을 포함해야 한다는 제약을 추가하면 플레이어가 실제로 플레이한 위치에 대한 가장 좋은 추측입니다. 일반적으로 개인 위치 필드보다 teamPosition 필드를 사용하는 것이 좋습니다.
+                "timeCCingOthers": 18, // CC관련 항목인거같은데 횟수인지 unix 타임인지 당한 건지 CC를 건 건지도 모르겟음
+                "timePlayed": 1533, // 플레이 타임 
+                "totalDamageDealt": 142659, // 총 데미지
+                "totalDamageDealtToChampions": 21368, // 챔피언에게 가한 총 데미지
+                "totalDamageShieldedOnTeammates": 0, // 타인에게 걸어주는 실드 량 그거인듯
+                "totalDamageTaken": 24802, // 총 받은 피해량
+                "totalHeal": 4684, // 총 회복량
+                "totalHealsOnTeammates": 0, // 팀원에게 준 회복량
+                "totalMinionsKilled": 186, // 총 미니언 킬 수
+                "totalTimeCCDealt": 135, // 적에게가한 CC 시간 인듯?
+                "totalTimeSpentDead": 208, // 총 죽어있던 시간 ?
+                "totalUnitsHealed": 1, // 유닛 치유 횟수?
+                "tripleKills": 0, // 트리플킬 횟수
+                "trueDamageDealt": 7292, // 가한 트루뎀
+                "trueDamageDealtToChampions": 5500, // 챔피언에게 가한 트루뎀
+                "trueDamageTaken": 4284, // 받은 트루뎀
+                "turretKills": 5, // 타워 막타 횟수?
+                "turretTakedowns": 6, // 타워 철거 횟수?
+                "turretsLost": 3, // 잃은 포탑 갯수?
+                "unrealKills": 0, // 언리얼 킬이 뭐임..
+                "visionScore": 6, // 시야점수
+                "visionWardsBoughtInGame": 1, // 제어와드 구매 횟수인듯
+                "wardsKilled": 0, // 와드 제거 횟수 
+                "wardsPlaced": 4, // 와드 설치 횟수
+                "win": true // 승리
             },
             {
                 "assists": 15,
