@@ -27,8 +27,8 @@ data = {
         "gameVersion": "12.17.467.4767", // 처음 두 부분은 게임이 플레이된 패치를 결정하는 데 사용할 수 있습니다. 플레이된 게임 버전인듯
         "mapId": 11, // 소환사의 협곡 "Current Version"
         "participants": [ // 참가자들
-            {
-                "assists": 2, // 어시?
+            {   
+                "assists": 2, // 어시? 
                 "baronKills": 0, // 바론킬 
                 "basicPings": 7, // 기본 핑??
                 "bountyLevel": 0, // 현상금 수준 이건또 뭔..
