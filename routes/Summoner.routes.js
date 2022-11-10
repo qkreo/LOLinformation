@@ -4,6 +4,6 @@ const SummonersController = require ('../controllers/Summoner.controller');
 const summonersController = new SummonersController()
 
 
-router.get('/', summonersController.getUserData)
+router.get('/:name', summonersController.getUserData)
 
 module.exports = router;

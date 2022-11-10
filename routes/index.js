@@ -8,4 +8,9 @@ router.get('/', (req, res, next) => {
 })
 router.use('/summoners', summonersRouter)
 
+const UserRouter = require('./searchUser.js') 
+
+
+router.use('/sommoner',UserRouter)
+
 module.exports = router;

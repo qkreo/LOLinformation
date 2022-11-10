@@ -5,12 +5,12 @@ class SummonersController {
     
     summonersService = new SummonersService()
 
-    getUserData = (req, res, next) => {
+    getUserData = async (req, res, next) => {
         const {name} = req.params
         try {
-            const summoner = this.summonersService.getUserData(name)
-
-            return res.status(200).json(summoner)
+            const summoner = await this.summonersService.getUserData(name)
+            
+            return res.status(200).send(summoner)
 
         } catch (err) {
 
