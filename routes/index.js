@@ -3,7 +3,6 @@ const router = express.Router();
 
 const UserRouter = require('./searchUser.js') 
 
-
-router.use('/sommoner',UserRouter)
+router.use('/summoner',UserRouter)
 
 module.exports = router;

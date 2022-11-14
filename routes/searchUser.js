@@ -5,8 +5,9 @@ const UserController = require('../controller/usercontroller');
 
 const userController = new UserController();
 
-router.get('/',userController.findUser)
-router.get('/game',userController.findgame)
-
+router.post('/Challengers',userController.findChallengers)
+router.post('/Grandmasters',userController.findGrandmasters)
+router.post('/Masters',userController.findMasters)
+router.post('/:Tier',userController.findTiers)
 
 module.exports = router;

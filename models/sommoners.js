@@ -12,12 +12,15 @@ required: true,
 puuid: {
 type: String,
 },
+tier : {
+type: String  
+},
 name: {
 type: String
 },
 profileIconId: {
-    type: Number
-    },
+type: Number
+},
 revisionDate: {
 type: Number
 },
