@@ -1,11 +1,11 @@
 const summoners = require("../models/summoners.js")
-const Matches = require("../models/Match.js")
+const matches = require("../models/Match.js")
 
-class MathcesRepository {
+class MatchesRepository {
 
     findMatchById = async (matchid) => {
 
-        const match = await Matches.findOne({ matchId: matchid })
+        const match = await matches.findOne({ matchId: matchid })
 
         return match;
     }
@@ -17,7 +17,7 @@ class MathcesRepository {
         const matchData = await userMatchData.info.participants.map((data) =>{
             
 
-            Matches.create({
+            matches.create({
 
                 matchId:userMatchData.metadata.matchId,
                 championId:data.championId,
@@ -50,11 +50,11 @@ class MathcesRepository {
 
     getChampionByName = async(championName) => {
         
-        const champion = await Matches.find({ championName: championName })
+        const champion = await matches.find({ championName: championName })
         
         return champion;
 
     }
 }
 
-module.exports = MathcesRepository
+module.exports = MatchesRepository

@@ -1,14 +1,14 @@
-const MathcesService = require('../services/Matches.service.js')
+const MatchesService = require('../services/Matches.service.js')
 
 
 class MatchesController {
     
-    mathcesService = new MathcesService()
+    matchesService = new MatchesService()
 
     getMatchData = async (req, res, next) => {
         // const {name} = req.params
         try {
-            const summoner = await this.mathcesService.getLeagueData()
+            const summoner = await this.matchesService.getLeagueData()
             
             return res.status(200).send(summoner)
 
@@ -24,7 +24,7 @@ class MatchesController {
         
         try {
 
-            const champion = await this.mathcesService.getChampion(championName)
+            const champion = await this.matchesService.getChampion(championName)
             
             return res.status(200).send(champion)
 
