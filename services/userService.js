@@ -1,12 +1,13 @@
 const axios = require('axios');
-const APIKEY = 'RGAPI-c03e6750-2775-4f78-87f2-c42eee95f086';
+require('dotenv').config();
+
 const reqHeader = {
     'User-Agent':
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
     'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
     'Accept-Charset': 'application/x-www-form-urlencoded; charset=UTF-8',
     Origin: 'https://developer.riotgames.com',
-    'X-Riot-Token': APIKEY,
+    'X-Riot-Token': process.env.APIKEY,
 };
 
 const UserRepository = require('../repositories/userRepository');
