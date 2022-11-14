@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
-
-const grandmasterSchema = new mongoose.Schema(
+const matchSchema = new mongoose.Schema(
     {
         matchId: {
             type: String,
@@ -78,6 +77,5 @@ const grandmasterSchema = new mongoose.Schema(
 );
 
 //새로운 mongoose.schema를 만듦
-
-module.exports = mongoose.model("grandmasters", grandmasterSchema);
+module.exports = mongoose.model('grandmastermatches', matchSchema);
 //모듈로 내보내 줄때, mongoose.model을 내보낼건데 그거 생긴게 postSchema처럼 생겼다~

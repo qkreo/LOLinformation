@@ -9,7 +9,7 @@ const reqHeader = {
     'X-Riot-Token': APIKEY,
 };
 
-const UserRepository = require('../repository/userRepository');
+const UserRepository = require('../repositories/userRepository');
 
 class UserService {
     userRepository = new UserRepository();
@@ -164,12 +164,10 @@ class UserService {
         return 'saveEnd';
     };
 
-    findTiers = async (Tier,Page) => {
-
-        const APIUrl =
-            'https://kr.api.riotgames.com/lol/league/v4/entries/';
-        const reqQuery = `?page=${Page}` 
-        const reqParams = `RANKED_SOLO_5x5/${Tier}/I`
+    findTiers = async (Tier, Page) => {
+        const APIUrl = 'https://kr.api.riotgames.com/lol/league/v4/entries/';
+        const reqQuery = `?page=${Page}`;
+        const reqParams = `RANKED_SOLO_5x5/${Tier}/I`;
 
         const tierlist = await axios({
             method: 'get', // [요청 타입]
@@ -212,51 +210,6 @@ class UserService {
         }
         return 'saveEnd';
     };
-
-    
 }
-
-// findgame = async() => {
-//     const APIUrl = "https://asia.api.riotgames.com/lol/match/v5/matches/KR_6134432920"
-//     const response = await axios({
-//       method: "get", // [요청 타입]
-//       url: APIUrl, // [요청 주소]
-//       headers: reqHeader,
-//       responseType: "json"
-//   })
-//   .then(function(response) {
-//     response.data.info.participants.map((participant) =>{
-//         participants.create({
-//             matchId:response.data.metadata.matchId,
-//             championId:participant.championId,
-//             championName:participant.championName,
-//             championTransform:participant.championTransform,
-//             individualPosition:participant.individualPosition,
-//             item0:participant.item0,
-//             item1:participant.item1,
-//             item2:participant.item2,
-//             item3:participant.item3,
-//             item4:participant.item4,
-//             item5:participant.item5,
-//             item6:participant.item6,
-//             lane:participant.lane,
-//             perks:participant.perks,
-//             puuid:participant.puuid,
-//             role:participant.role,
-//             summoner1Id:participant.summoner1Id,
-//             summoner2Id:participant.summoner2Id,
-//             summonerId:participant.summonerId,
-//             summonerName:participant.summonerName,
-//             teamPosition:participant.teamPosition,
-//             win:participant.win
-//         })
-//       })
-//       return true
-//   })
-//   .catch(function(error) {
-//       console.log("ERROR : " + JSON.stringify(error));
-//   });
-//   return response
-// }
 
 module.exports = UserService;
