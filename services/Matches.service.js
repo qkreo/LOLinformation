@@ -7,7 +7,7 @@ const MatchesRepository = require('../repositories/Matches.repository');
 class MatchesService {
     matchesRepository = new MatchesRepository();
 
-    getLeagueData = async (name) => {
+    getLeagueData = async () => {
         //유저 puuid 추출
         console.log('저장시작');
         const legueData = await axios({
