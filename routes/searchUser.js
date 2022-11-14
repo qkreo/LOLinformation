@@ -1,12 +1,12 @@
-const express = require('express');
-const router = express.Router();
+// const express = require('express');
+// const router = express.Router();
 
-const UserController = require('../controller/usercontroller');
+// const UserController = require('../controller/usercontroller');
 
-const userController = new UserController();
+// const userController = new UserController();
 
-router.get('/',userController.findUser)
-router.get('/game',userController.findgame)
+// router.get('/',userController.findUser)
+// router.get('/game',userController.findgame)
 
 
-module.exports = router;
+// module.exports = router;
