@@ -1,13 +1,12 @@
-// const SummonersRepository = require('../repository/SummonersRepository');
 
 require('dotenv').config();
 const axios = require('axios');
 const krUrl = 'https://kr.api.riotgames.com/lol/';
 const asiaUrl = 'https://asia.api.riotgames.com/lol/';
-const MathcesRepository = require('../repositories/Matches.repository');
+const MatchesRepository = require('../repositories/Matches.repository');
 
-class MathcesService {
-    mathcesRepository = new MathcesRepository();
+class MatchesService {
+    matchesRepository = new MatchesRepository();
 
     getLeagueData = async (name) => {
         //유저 puuid 추출
@@ -35,7 +34,7 @@ class MathcesService {
             return data.summonerId;
         });
 
-        let i = 0;
+        let i = 45;
 
         const getPuuId = setInterval(async () => {
             if (i === legueDataOfId.length) {
@@ -208,10 +207,10 @@ class MathcesService {
         
                 const matchid = userMatchData.metadata.matchId;
                 const findMatchId =
-                    await this.summonersRepository.findMatchById(matchid);
+                    await this.matchesRepository.findMatchById(matchid);
         
                 if (!findMatchId) {
-                    await this.summonersRepository.saveMatchData(userMatchData);
+                    await this.matchesRepository.saveMatchData(userMatchData);
                 } else {
                     console.log(`${i + 1}번쨰와 동일한 매치데이터 존재함`);
                 }
@@ -224,7 +223,7 @@ class MathcesService {
     };
 
     getChampion = async(championName) => {
-        const champion = await this.summonersRepository.getChampionByName(championName);
+        const champion = await this.matchesRepository.getChampionByName(championName);
 
         if(!champion) {
             throw new Error('해당 챔피언이 존재하지 않습니다')
@@ -302,4 +301,4 @@ class MathcesService {
     }
 }
 
-module.exports = MathcesService;
+module.exports = MatchesService;
