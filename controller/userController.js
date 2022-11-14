@@ -6,18 +6,26 @@ class UserController {
       this.userService = new UserService();
     }
     findUser = async (req, res, next) => {
-
         try {
-            const { sommonerId } = req.body;
-      
-            let info = await this.userService.findUser(sommonerId);
+
+            let info = await this.userService.findUser();
 
             res.json(info);
           } catch (err) {
             next(err);
           }
         };
- 
+    findgame = async (req, res, next) => {
+      try {
+
+          let info = await this.userService.findgame();
+
+          res.json(info);
+        } catch (err) {
+          next(err);
+        }
+      };    
+
       };    
     
 module.exports = UserController;

@@ -3,6 +3,9 @@ const app = express();
 const port = 5000;
 const http = require('http').createServer(app); 
 
+const mongoose = require('./models/index');
+mongoose()
+
 const Router = require('./routes/index');
 const errorHandlerMiddleware = require('./middlewares/error_handler_middleware');
 
