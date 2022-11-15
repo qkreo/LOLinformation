@@ -8,7 +8,7 @@ const MatchesRepository = require('../repositories/Matches.repository');
 class MatchesService {
     matchesRepository = new MatchesRepository();
 
-    getLeagueData = async (name) => {
+    getLeagueData = async () => {
         //유저 puuid 추출
         console.log('저장시작')
         const legueData = await axios({
@@ -34,7 +34,7 @@ class MatchesService {
             return data.summonerId;
         });
 
-        let i = 45;
+        let i = 190;
 
         const getPuuId = setInterval(async () => {
             if (i === legueDataOfId.length) {
