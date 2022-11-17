@@ -49,9 +49,7 @@ class UserService {
             });
 
         for (let i = 0; i < challengerlist.length; i++) {
-            const result = await this.userRepository.findSummoner(
-                challengerlist[i].summonerId
-            );
+
             if (!result) {
                 setTimeout(async () => {
                     const summonerAccount = await this.findSummoner(

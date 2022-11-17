@@ -6,9 +6,10 @@ class MatchesController {
     matchesService = new MatchesService()
 
     getMatchData = async (req, res, next) => {
-        // const {name} = req.params
+        const {sumNum,num} = req.params
+
         try {
-            const summoner = await this.matchesService.getLeagueData()
+            const summoner = await this.matchesService.getMatchData(sumNum,num)
             
             return res.status(200).send(summoner)
 

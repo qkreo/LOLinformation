@@ -16,6 +16,9 @@ const summonerSchema = new mongoose.Schema(
         name: {
             type: String,
         },
+        tier: {
+            type:String,
+        },
         profileIconId: {
             type: Number,
         },

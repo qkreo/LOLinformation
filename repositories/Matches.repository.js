@@ -1,5 +1,4 @@
 const summoners = require('../models/summoners.js');
-const matches = require('../models/Match.js');
 const Bronze = require('../models/Bronze')
 const Silver = require('../models/Silver')
 const Gold = require('../models/Gold')
@@ -10,15 +9,20 @@ const Grandmaster = require('../models/Grandmaster')
 const Challenger = require('../models/Challenger')
 
 class MatchesRepository {
+
+    findUserList = async () => {
+        return await summoners.find({tier:"DIAMOND"})
+    }
+
     findMatchById = async (matchid) => {
-        const match = await matches.findOne({ matchId: matchid });
+        const match = await Diamond.findOne({ matchId: matchid });
 
         return match;
     };
 
     saveMatchData = async (userMatchData) => {
         const matchData = await userMatchData.info.participants.map((data) => {
-            matches.create({
+            Diamond.create({
                 matchId: userMatchData.metadata.matchId,
                 championId: data.championId,
                 championName: data.championName,
@@ -48,7 +52,7 @@ class MatchesRepository {
     };
 
     getChampionByName = async (championName) => {
-        const champion = await matches.find({ championName: championName });
+        const champion = await  Diamond.find({ championName: championName });
 
         return champion;
     };

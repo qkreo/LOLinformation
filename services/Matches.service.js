@@ -1,151 +1,20 @@
 require('dotenv').config();
 const axios = require('axios');
-const krUrl = 'https://kr.api.riotgames.com/lol/';
+
 const asiaUrl = 'https://asia.api.riotgames.com/lol/';
 const MatchesRepository = require('../repositories/Matches.repository');
 
 class MatchesService {
     matchesRepository = new MatchesRepository();
 
-    getLeagueData = async () => {
-        //유저 puuid 추출
-        console.log('저장시작');
-        const legueData = await axios({
-            method: 'get',
-            url: `${krUrl}league/v4/grandmasterleagues/by-queue/RANKED_SOLO_5x5`,
-            headers: {
-                'User-Agent':
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
-                'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-                'Accept-Charset':
-                    'application/x-www-form-urlencoded; charset=UTF-8',
-                Origin: 'https://developer.riotgames.com',
-                'X-Riot-Token': process.env.API_KEY,
-            },
-            responseType: 'json',
-        })
-            .then((response) => {
-                return response.data.entries;
-            })
-            .catch((error) => {
-                return error.message;
-            });
+    getMatchData = async (sumNum,num) => {
+        console.log(`${sumNum}번 소환사의 매치데이터${num} 가져오기시작`);
 
-        const legueDataOfId = await legueData.map((data) => {
-            return data.summonerId;
-        });
+        const userList = await this.matchesRepository.findUserList();
 
-        let i = 45;
-
-        const getPuuId = setInterval(async () => {
-            if (i === legueDataOfId.length) {
-                clearInterval(getPuuId);
-            } else {
-                const userPuuid = await axios({
-                    method: 'get',
-                    url: `${krUrl}summoner/v4/summoners/${legueDataOfId[i]}`,
-                    headers: {
-                        'User-Agent':
-                            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
-                        'Accept-Language':
-                            'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-                        'Accept-Charset':
-                            'application/x-www-form-urlencoded; charset=UTF-8',
-                        Origin: 'https://developer.riotgames.com',
-                        'X-Riot-Token': process.env.API_KEY,
-                    },
-                    responseType: 'json',
-                })
-                    .then((response) => {
-                        return response.data.puuid;
-                    })
-                    .catch((error) => {
-                        return error.message;
-                    });
-
-                console.log(`${i + 1}번 유저`, userPuuid);
-                this.getMatchData(userPuuid);
-
-                i++;
-            }
-        }, 200000);
-
-        // // 해당 유저 matchid 추출
-        // const userMatchid = await axios({
-        //     method: 'get',
-        //     url: `${asiaUrl}match/v5/matches/by-puuid/${userPuuid}/ids`,
-        //     headers:{
-        //         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36",
-        //         "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        //         "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
-        //         "Origin": "https://developer.riotgames.com",
-        //         "X-Riot-Token": process.env.API_KEY
-        //     },
-        //     params: {
-        //         queue: 420,
-        //         start: 0,
-        //         count: 80,
-        //     },
-        // })
-        //     .then((response) => {
-        //         return response.data;
-        //     })
-        //     .catch((error) => {
-        //         return error.message;
-        //     });
-        // console.log(userMatchid);
-
-        // for (let i = 0; i < 80; i++) {
-        //     const userMatchData = await axios({
-        //         method: 'get',
-        //         url: `${asiaUrl}match/v5/matches/${userMatchid[i]}`,
-        //         headers:{
-        //             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36",
-        //             "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
-        //             "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
-        //             "Origin": "https://developer.riotgames.com",
-        //             "X-Riot-Token": process.env.API_KEY
-        //         },
-        //         responseType: 'json',
-        //     })
-        //         .then((response) => {
-        //             return response.data;
-        //         })
-        //         .catch((error) => {
-        //             return error.message;
-        //         });
-        //     console.log(
-        //         `${i + 1}번째 매치데이터아이디`,
-        //         userMatchData.metadata.matchId
-        //     );
-
-        //     const matchid = userMatchData.metadata.matchId;
-        //     const findMatchId = await this.summonersRepository.findMatchById(
-        //         matchid
-        //     );
-
-        //     if (!findMatchId) {
-        //         await this.summonersRepository.getMatchData(userMatchData);
-        //     } else {
-        //         console.log(`${i + 1}번쨰와 동일한 매치데이터 존재함`);
-        //     }
-        // }
-
-        // for (let j = 0; j < 400; j = j + 80) {
-        //     for (let i = 0; i < 80; i++) {
-        //         setTimeout(async () => {
-        //
-
-        //         }, 180000);
-        // }
-        // }
-    };
-
-    getMatchData = async (userPuuid) => {
-        console.log('매치데이터 가져오기시작');
         const userMatchid = await axios({
-            method: 'get',
-            url: `${asiaUrl}match/v5/matches/by-puuid/${userPuuid}/ids`,
+            method: 'get', 
+            url: `${asiaUrl}match/v5/matches/by-puuid/${userList[sumNum].puuid}/ids`,
             headers: {
                 'User-Agent':
                     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
@@ -153,11 +22,11 @@ class MatchesService {
                 'Accept-Charset':
                     'application/x-www-form-urlencoded; charset=UTF-8',
                 Origin: 'https://developer.riotgames.com',
-                'X-Riot-Token': process.env.API_KEY,
+                'X-Riot-Token': process.env.APIKEY,
             },
             params: {
                 queue: 420,
-                start: 0,
+                start: num,
                 count: 80,
             },
         })
@@ -167,12 +36,13 @@ class MatchesService {
             .catch((error) => {
                 return error.message;
             });
-
-        console.log(userMatchid);
+        console.log(userMatchid.length)
         this.saveMatchData(userMatchid);
+
     };
 
     saveMatchData = async (userMatchid) => {
+
         let i = 0;
 
         const saveMatchInterval = setInterval(async () => {
@@ -185,12 +55,11 @@ class MatchesService {
                     headers: {
                         'User-Agent':
                             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
-                        'Accept-Language':
-                            'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+                        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
                         'Accept-Charset':
                             'application/x-www-form-urlencoded; charset=UTF-8',
                         Origin: 'https://developer.riotgames.com',
-                        'X-Riot-Token': process.env.API_KEY,
+                        'X-Riot-Token': process.env.APIKEY,
                     },
                     responseType: 'json',
                 })
@@ -219,7 +88,7 @@ class MatchesService {
 
                 i++;
             }
-        }, 1000);
+        }, 1500);
     };
 
     getChampion = async (championName) => {
@@ -242,7 +111,6 @@ class MatchesService {
                     champ.item5,
                     champ.win
                 );
-
                 // item.count()
                 // item.sort((a, b) => b - a )
 
