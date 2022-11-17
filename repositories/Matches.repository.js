@@ -106,30 +106,24 @@ class MatchesRepository {
 
     }
 
-    getEnemyById = async (championId, match) => {
+    getEnemyById = async (championId, matchData) => {
 
-        let enemy = {};
+        let enemy = [];
+        
+        // for (let i = 0; i < matchData.length; i++) {
 
-        // for (let i = 0; i < championMatchData.length; i++) {
+            const result = await Challenger.find({ matchData
+                // championId: {$ne : championId },
+                // matchId: ,
+                // individualPosition: matchData[i].individualPosition
+            },{_id: 0, championId: 1, individualPosition: 1, championName: 1, win: 1});
 
-            let result = await Challenger.find({ 
-                championId: {$ne : championId },
-                matchId: match.matchId,
-                // individualPosition: match.individualPosition
-            });
+            console.log(result);
+            // enemy.push(result)
 
-
-            console.log(result)
         // }
-
         
-        
-        
-        
-
         // console.log(enemy)
-
-        // return enemy;
     }
 
 }

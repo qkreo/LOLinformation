@@ -183,7 +183,7 @@ class MatchesService {
 
         const itemList = [
             3001, 3006, 3009, 3011, 3020, 3026, 3031, 3033, 3036, 3040,
-            3041, 3042, 3046, 3047, 3050, 3053, 3065, 3071, 3072, 3074,
+            3042, 3046, 3047, 3050, 3053, 3065, 3071, 3072, 3074,
             3075, 3078, 3083, 3085, 3089, 3091, 3094, 3095, 3100, 3102,
             3107, 3109, 3110, 3111, 3115, 3116, 3117, 3119, 3121, 3124,
             3135, 3139, 3142, 3143, 3152, 3153, 3156, 3157, 3158, 3165,
@@ -246,11 +246,11 @@ class MatchesService {
                         win: ((winCount / pickCount) * 100).toFixed(2),
                     };
     
-                    if (winRateByItem.win !== 'NaN') {
+                    if (winRateByItem.win !== 'NaN' && winRateByItem.pick > 2) {
                         winRateByItemtoArray.push(winRateByItem);
                     }
                 }
-    
+                
                 winRateByItemtoArray.sort((a, b) => b.pick - a.pick);
             }
         }
@@ -265,23 +265,20 @@ class MatchesService {
             throw new Error('해당 챔피언이 존재하지 않습니다');
 
         } else {
-            let matchId = [];
-            let individualPosition = [];
+            let matchData = [];
 
-            let match = {
-                matchId : matchId,
-                individualPosition: individualPosition
-            };
-            
             champion.map((data) => {
-                matchId.push(data.matchId)
-
-                individualPosition.push(data.individualPosition) 
+                
+                matchData.push({
+                    matchId: data.matchId,
+                    individualPosition: data.individualPosition
+                })
+                
             })
 
-            // console.log(match)
+            // console.log(matchData)
 
-            const enemy = await this.matchesRepository.getEnemyById(championId, match)
+            const enemy = await this.matchesRepository.getEnemyById(championId, matchData)
 
         }
     }
