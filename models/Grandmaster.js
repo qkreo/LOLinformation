@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 const grandmasterSchema = new mongoose.Schema(
     {
         matchId: {

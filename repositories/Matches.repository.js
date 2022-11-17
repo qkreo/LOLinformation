@@ -1,5 +1,5 @@
 const summoners = require('../models/summoners.js');
-const matches = require('../models/Match.js');
+// const matches = require('../models/Match.js');
 const Bronze = require('../models/Bronze')
 const Silver = require('../models/Silver')
 const Gold = require('../models/Gold')
@@ -10,15 +10,28 @@ const Grandmaster = require('../models/Grandmaster')
 const Challenger = require('../models/Challenger')
 
 class MatchesRepository {
+
+    // getUserPuuid = async () => {
+
+    //     const summoner = await summoners.find({ tier : "grandmaster"})
+
+    //     const result = summoner.map((data) => {
+    //        return data.puuid
+    //     })
+        
+    //     return result;
+
+    // }
+
     findMatchById = async (matchid) => {
-        const match = await matches.findOne({ matchId: matchid });
+        const match = await Grandmaster.findOne({ matchId: matchid });
 
         return match;
     };
 
     saveMatchData = async (userMatchData) => {
         const matchData = await userMatchData.info.participants.map((data) => {
-            matches.create({
+            Grandmaster.create({
                 matchId: userMatchData.metadata.matchId,
                 championId: data.championId,
                 championName: data.championName,
@@ -47,11 +60,78 @@ class MatchesRepository {
         return matchData;
     };
 
-    getChampionByName = async (championName) => {
-        const champion = await matches.find({ championName: championName });
+    getChampionById = async (championId, tier) => {
+        // console.log(tier)
+        if(tier === 'challenger') {
+            const champion = await Challenger.find({ championId: championId });
+
+            return champion;
+        } else if (tier === 'grandmaster') {
+            const champion = await Grandmaster.find({ championId: championId });
+
+            return champion;
+        } else if (tier === 'master') {
+            const champion = await Master.find({ championId: championId });
+
+            return champion;
+        } else if (tier === 'diamond') {
+            const champion = await Diamond.find({ championId: championId });
+
+            return champion;
+        } else if (tier === 'platinum') {
+            const champion = await Platinum.find({ championId: championId });
+
+            return champion;
+        } else if (tier === 'gold') {
+            const champion = await Gold.find({ championId: championId });
+
+            return champion;
+        } else if (tier === 'silver') {
+            const champion = await Silver.find({ championId: championId });
+
+            return champion;
+        } else if (tier === 'bronze') {
+            const champion = await Bronze.find({ championId: championId });
+
+            return champion;
+        }
+        
+    };
+
+    getChampionByIdtest = async (championId) => {
+        
+        const champion = await Challenger.find({ championId: championId });
 
         return champion;
-    };
+
+    }
+
+    getEnemyById = async (championId, match) => {
+
+        let enemy = {};
+
+        // for (let i = 0; i < championMatchData.length; i++) {
+
+            let result = await Challenger.find({ 
+                championId: {$ne : championId },
+                matchId: match.matchId,
+                // individualPosition: match.individualPosition
+            });
+
+
+            console.log(result)
+        // }
+
+        
+        
+        
+        
+
+        // console.log(enemy)
+
+        // return enemy;
+    }
+
 }
 
 module.exports = MatchesRepository;
