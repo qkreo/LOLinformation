@@ -6,6 +6,8 @@ const http = require('http').createServer(app);
 const mongoose = require('./models/index');
 mongoose()
 
+app.use(express.static("assets"));
+
 const Router = require('./routes/index');
 const errorHandlerMiddleware = require('./middlewares/error_handler_middleware');
 
