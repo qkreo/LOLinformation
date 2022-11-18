@@ -4,8 +4,8 @@ require('dotenv').config();
 const connect = () => {
 mongoose
 
-.connect(`mongodb+srv://qkero407:${process.env.SECRET_KEY}@cluster0.iao4kcr.mongodb.net/test`)
-// .connect(`mongodb+srv://test:${process.env.SECRET_KEY}@cluster0.sojhuso.mongodb.net/test`)
+// .connect(`mongodb+srv://qkero407:${process.env.SECRET_KEY}@cluster0.iao4kcr.mongodb.net/test`)
+.connect(`mongodb+srv://test:${process.env.SECRET_KEY}@cluster0.sojhuso.mongodb.net/test`)
 .catch(err => console.log(err));
 };
 

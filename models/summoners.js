@@ -13,6 +13,9 @@ const summonerSchema = new mongoose.Schema(
         puuid: {
             type: String,
         },
+        tier: {
+            type: String,
+        },
         name: {
             type: String,
         },

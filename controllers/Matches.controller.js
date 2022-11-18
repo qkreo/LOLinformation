@@ -6,6 +6,7 @@ class MatchesController {
     matchesService = new MatchesService()
 
     getMatchData = async (req, res, next) => {
+
         const {sumNum,num} = req.params
 
         try {
@@ -21,15 +22,31 @@ class MatchesController {
 
     getChampion = async (req, res, next) => {
 
-        const {championName} = req.params
+        const {championId} = req.params
         
         try {
 
-            const champion = await this.matchesService.getChampion(championName)
+            const champion = await this.matchesService.getChampion(championId)
             
             return res.status(200).send(champion)
 
         } catch (err) {
+
+            return next(err)
+        }
+    }
+
+    getWinRatingByChamp = async (req, res, next) => {
+
+        const {championId} = req.params;
+        
+        try {
+
+            const winRating = await this.matchesService.getWinRatingByChamp(championId)
+
+            return res.status(200).send(winRating)
+        }
+        catch (err) {
 
             return next(err)
         }
