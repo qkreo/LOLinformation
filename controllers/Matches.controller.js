@@ -10,7 +10,7 @@ class MatchesController {
         try {
             const match = await this.matchesService.getLeagueData()
             // const match = await this.matchesService.getUserPuuId()
-            return res.status(200).send(match)
+            return res.status(200).json(match)
 
         } catch (err) {
 
