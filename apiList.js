@@ -142,7 +142,7 @@ class API {
     };
 
     findMatchData = async (matchId,i) => {
-        try {
+
             const matchData = await axios({
                 method: 'get',
                 url: `${asiaUrl}match/v5/matches/${matchId}`,
@@ -153,14 +153,14 @@ class API {
                     return response.data;
                 })
                 .catch((error) => {
-                    return error.message;
+                    console.log(error.message)
                 });
-            return matchData;
-        } catch(err) {
-            setTimeout(() => {
-                this.findMatchData(matchId,i);
-            }, 15000);
-        }
+            if (typeof matchData === "object") {
+                return matchData;
+            }    
+
+
+
 
     };
 

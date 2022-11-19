@@ -86,10 +86,9 @@ class MatchesService {
 
     saveMatchData = async (tier) => {
         try {
-            let i = 938;
+            let i = 7439;
             const matchList = await this.matchesRepository.findMatch(tier);
             console.log(matchList.length, '매치리스트');
-
             const saveMatchInterval = setInterval(async () => {
                 if (i === matchList.length) {
                     console.log('=============매치저장종료=============');
@@ -101,40 +100,40 @@ class MatchesService {
                         );
                     if (!findMatchId) {
                         console.log(`${i}번째 매치데이터 저장`);
-
                         const matchData = await this.api.findMatchData(
                             matchList[i].matchId,
                             i
-                        );
-
-                        if (typeof matchData === String) throw new Error();
-
-                        matchData.info.participants.map((data) => {
-                            this.matchesRepository.saveMatchData({
-                                matchId: matchData.metadata.matchId,
-                                championId: data.championId,
-                                championName: data.championName,
-                                championTransform: data.championTransform,
-                                individualPosition: data.individualPosition,
-                                itemList: `${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}`,
-                                puuid: data.puuid,
-                                summoner1Id: data.summoner1Id,
-                                summoner2Id: data.summoner2Id,
-                                summonerId: data.summonerId,
-                                summonerName: data.summonerName,
-                                teamPosition: data.teamPosition,
-                                win: data.win,
+                        ); 
+                        if(typeof matchData === "object") {
+                            matchData.info.participants.map((data) => {
+                                this.matchesRepository.saveMatchData({
+                                    matchId: matchData.metadata.matchId,
+                                    championId: data.championId,
+                                    championName: data.championName,
+                                    championTransform: data.championTransform,
+                                    individualPosition: data.individualPosition,
+                                    itemList: `${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}`,
+                                    puuid: data.puuid,
+                                    summoner1Id: data.summoner1Id,
+                                    summoner2Id: data.summoner2Id,
+                                    summonerId: data.summonerId,
+                                    summonerName: data.summonerName,
+                                    teamPosition: data.teamPosition,
+                                    win: data.win,
+                                });
                             });
-                        });
+                        } else {
+                            console.log("이거 의미있나111")
+                            return
+                        }
+                      
                     } else console.log(`${i}번쨰와 동일한 매치데이터 존재함`);
 
                     i++;
                 }
-            }, 1300);
+            }, 1500);
         } catch (err) {
-            setTimeout(() => {
-                this.saveMatchData();
-            }, 15000);
+            console.log("이거 의미있나222")
         }
     };
 
