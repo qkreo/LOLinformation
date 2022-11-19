@@ -6,8 +6,9 @@ const headers = {
     'User-Agent':
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
     'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-    'Accept-Charset': 'application/x-www-form-urlencoded; charset=UTF-8',
-    Origin: 'https://developer.riotgames.com',
+    'Accept-Charset':
+        'application/x-www-form-urlencoded; charset=UTF-8',
+    'Origin': 'https://developer.riotgames.com',
     'X-Riot-Token': process.env.APIKEY,
 };
 
@@ -24,8 +25,11 @@ class API {
             .catch((error) => {
                 return error.message;
             });
+
+
         return tierList;
     };
+
 
     gettierList = async (division, tier, page) => {
         const tierList = await axios({
@@ -39,10 +43,62 @@ class API {
             .catch((error) => {
                 return error.message;
             });
-        const result = {};
-        result.entries = tierList;
-        result.tier = tierList[0].tier;
-        return result;
+
+            const result = {};
+            result.entries = tierList
+            result.tier = tierList[0].tier
+            return result
+    }
+
+    getSummoner = async (tierList,i) => {
+        const summoner = await axios({
+            method: 'get',
+            url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/${tierList.entries[i].summonerId}`,
+            headers:headers,
+        })
+            .then((response) => {
+                return response.data;
+            })
+            .catch((error) => {
+                return error.message;
+            });
+            // summoner.tier = tierList.tier
+            // summoner.rank = tierList.entries[i].rank
+            // summoner.leaguePoints = tierList.entries[i].leaguePoints
+            // summoner.wins = tierList.entries[i].wins
+            // summoner.losses = tierList.entries[i].losses
+            return summoner 
+    }
+
+
+    getMatchList = async (summoner) => {
+  
+        const matchList = await axios({
+            method: 'get',
+            url: `${asiaUrl}match/v5/matches/by-puuid/${summoner.puuid}/ids`,
+            headers:headers,
+            params: {
+                queue: 420,
+                start: 0,
+                count: 80,
+            },
+        })
+            .then((response) => {
+                return response.data;
+            })
+            .catch((error) => {
+                return error.message;
+            });
+            
+            const match = matchList.map((data) => {
+               return {
+                matchId:data,
+                tier:summoner.tier
+               }
+
+            })
+
+            return match
     };
 
     getSummoner = async (tierList, i) => {

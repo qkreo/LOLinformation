@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const MatchesRepository = require('../repositories/Matches.repository');
+
 const API = require('../apiList');
 
 class MatchesService {
@@ -10,6 +11,7 @@ class MatchesService {
     }
 
     getLeagueList = async (league) => {
+        
         const tierList = await this.api.getLeagueList(league);
 
         this.getSummoner(tierList);
@@ -43,6 +45,7 @@ class MatchesService {
     };
 
     getSummoner = async (tierList) => {
+
         try {
             let i = 0;
             console.log(tierList.entries.length);
