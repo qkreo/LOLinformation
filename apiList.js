@@ -62,7 +62,7 @@ class API {
             .catch((error) => {
                 return error.message;
             });
-            // summoner.tier = tierList.tier
+            summoner.tier = tierList.tier
             // summoner.rank = tierList.entries[i].rank
             // summoner.leaguePoints = tierList.entries[i].leaguePoints
             // summoner.wins = tierList.entries[i].wins

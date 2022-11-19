@@ -92,7 +92,7 @@ class MatchesService {
                                 championName: data.championName,
                                 championTransform: data.championTransform,
                                 individualPosition: data.individualPosition,
-                                itemList: `[${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}]`,
+                                itemList: `${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}`,
                                 puuid: data.puuid,
                                 summoner1Id: data.summoner1Id,
                                 summoner2Id: data.summoner2Id,
@@ -118,14 +118,14 @@ class MatchesService {
 
     getChampion = async (championId) => {
         const tier = [
-            'challenger',
-            'grandmaster',
-            'master',
-            'diamond',
-            'platinum',
-            'gold',
-            'silver',
-            'bronze',
+            'CHALLENGER',
+            'GRANDMASTER',
+            'MASTER',
+            'DIAMOND',
+            'PLATINUM',
+            'GOLD',
+            'SILVER',
+            'BRONZE',
         ];
 
         const itemList = [
@@ -141,96 +141,97 @@ class MatchesService {
         ];
 
         let winRateByItemtoArray = [];
-
-        for (let j = 0; j < tier.length; j++) {
+        
+        // for (let j = 0; j < tier.length; j++) {
             const champion = await this.matchesRepository.getChampionById(
-                championId,
-                tier[j]
+                championId, tier[0]
             );
 
-            if (!champion) {
-                throw new Error('해당 챔피언이 존재하지 않습니다');
-            } else {
-                const chapionOfItem = champion.map((champ) => {
-                    const item = [];
+            return champion;
 
-                    item.push(
-                        champ.item0,
-                        champ.item1,
-                        champ.item2,
-                        champ.item3,
-                        champ.item4,
-                        champ.item5,
-                        champ.win
-                    );
+        //     if (!champion) {
+        //         throw new Error('해당 챔피언이 존재하지 않습니다');
+        //     } else {
+        //         const chapionOfItem = champion.map((champ) => {
+        //             const item = [];
 
-                    return item;
-                });
+        //             item.push(
+        //                 champ.item0,
+        //                 champ.item1,
+        //                 champ.item2,
+        //                 champ.item3,
+        //                 champ.item4,
+        //                 champ.item5,
+        //                 champ.win
+        //             );
 
-                for (let i = 0; i < itemList.length; i++) {
-                    let winCount = 0;
-                    let pickCount = 0;
+        //             return item;
+        //         });
 
-                    chapionOfItem.map((data) => {
-                        if (data.indexOf(itemList[i]) === -1) {
-                            return;
-                        } else if (data.indexOf(true) === -1) {
-                            pickCount = pickCount + 1;
+        //         for (let i = 0; i < itemList.length; i++) {
+        //             let winCount = 0;
+        //             let pickCount = 0;
 
-                            return;
-                        } else {
-                            pickCount = pickCount + 1;
-                            winCount = winCount + 1;
-                        }
-                    });
+        //             chapionOfItem.map((data) => {
+        //                 if (data.indexOf(itemList[i]) === -1) {
+        //                     return;
+        //                 } else if (data.indexOf(true) === -1) {
+        //                     pickCount = pickCount + 1;
 
-                    const winRateByItem = {
-                        tier: tier[j],
-                        item: itemList[i],
-                        total: chapionOfItem.length,
-                        pick: (
-                            (pickCount / chapionOfItem.length) *
-                            100
-                        ).toFixed(2),
-                        win: ((winCount / pickCount) * 100).toFixed(2),
-                    };
+        //                     return;
+        //                 } else {
+        //                     pickCount = pickCount + 1;
+        //                     winCount = winCount + 1;
+        //                 }
+        //             });
 
-                    if (winRateByItem.win !== 'NaN' && winRateByItem.pick > 2) {
-                        winRateByItemtoArray.push(winRateByItem);
-                    }
-                }
+        //             const winRateByItem = {
+        //                 tier: tier[j],
+        //                 item: itemList[i],
+        //                 total: chapionOfItem.length,
+        //                 pick: (
+        //                     (pickCount / chapionOfItem.length) *
+        //                     100
+        //                 ).toFixed(2),
+        //                 win: ((winCount / pickCount) * 100).toFixed(2),
+        //             };
 
-                winRateByItemtoArray.sort((a, b) => b.pick - a.pick);
-            }
-        }
-        return winRateByItemtoArray;
+        //             if (winRateByItem.win !== 'NaN' && winRateByItem.pick > 2) {
+        //                 winRateByItemtoArray.push(winRateByItem);
+        //             }
+        //         }
+
+        //         winRateByItemtoArray.sort((a, b) => b.pick - a.pick);
+        //     }
+        // }
+        // return winRateByItemtoArray;
     };
 
-    getWinRatingByChamp = async (championId) => {
-        const champion = await this.matchesRepository.getChampionByIdtest(
-            championId
-        );
+    // getWinRatingByChamp = async (championId) => {
+    //     const champion = await this.matchesRepository.getChampionByIdtest(
+    //         championId
+    //     );
 
-        if (!champion) {
-            throw new Error('해당 챔피언이 존재하지 않습니다');
-        } else {
-            let matchData = [];
+    //     if (!champion) {
+    //         throw new Error('해당 챔피언이 존재하지 않습니다');
+    //     } else {
+    //         let matchData = [];
 
-            champion.map((data) => {
-                matchData.push({
-                    matchId: data.matchId,
-                    individualPosition: data.individualPosition,
-                });
-            });
+    //         champion.map((data) => {
+    //             matchData.push({
+    //                 matchId: data.matchId,
+    //                 individualPosition: data.individualPosition,
+    //             });
+    //         });
 
-            // console.log(matchData)
+    //         // console.log(matchData)
 
-            const enemy = await this.matchesRepository.getEnemyById(
-                championId,
-                matchData
-            );
-        }
-    };
+    //         const enemy = await this.matchesRepository.getEnemyById(
+    //             championId,
+    //             matchData
+    //         );
+    //     }
+    // };
 }
 
 module.exports = MatchesService;
