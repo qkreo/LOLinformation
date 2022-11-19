@@ -1,9 +1,8 @@
 require('dotenv').config();
-const axios = require('axios');
 
-const asiaUrl = 'https://asia.api.riotgames.com/lol/';
 const MatchesRepository = require('../repositories/Matches.repository');
-const API = require('../api');
+const API = require('../apiList');
+
 class MatchesService {
     constructor() {
         this.matchesRepository = new MatchesRepository();
@@ -16,77 +15,103 @@ class MatchesService {
         this.getSummoner(tierList);
     };
 
-    gettierList = async (division,tier,page) => {
-        const tierList = await this.api.gettierList(division,tier,page);
+    gettierList = async (division, tier, page) => {
+        const tierList = await this.api.gettierList(division, tier, page);
 
         this.getSummoner(tierList);
     };
 
     getSummoner = async (tierList) => {
-        let i = 0;
-
-        const saveMatchInterval = setInterval(async () => {
-            if (i === tierList.length) {
-                console.log("=============저장종료=============")
-                clearInterval(saveMatchInterval);
-            } else {
-                const summoner = await this.api.getSummoner(tierList,i);
-
-                this.getMatchList(summoner);
-
-                i++;
-            }
-        }, 2000);
-
+        try {
+            let i = 0;
+            console.log(tierList.entries.length)
+            const saveMatchInterval = setInterval(async () => {
+                if (i === tierList.length) {
+                    console.log('=============저장종료=============');
+                    clearInterval(saveMatchInterval);
+                } else {
+    
+                    const summoner = await this.api.getSummoner(tierList, i);
+    
+                    this.getMatchList(summoner);
+    
+                    i++;
+                }
+            }, 3000);
+        } catch (err) {
+            setTimeout(() => {
+                this.getSummoner(tierList)
+              }, 15000)
+        }
+       
     };
 
     getMatchList = async (summoner) => {
-        const matchList = await this.api.getMatchList(summoner);
+        try {
+            const matchList = await this.api.getMatchList(summoner);
 
-        matchList.map(async (match) => {
-            const findmatch = await this.matchesRepository.findMatchList(match.matchId);
-
-            if (!findmatch) this.matchesRepository.saveMatchList(match);
-            else return;
-        });
+            matchList.map(async (match) => {
+                const findmatch = await this.matchesRepository.findMatchList(
+                    match.matchId
+                );
+    
+                if (!findmatch) this.matchesRepository.saveMatchList(match);
+                else console.log("중복");
+            });
+        } catch (err) {
+            setTimeout(() => {
+                this.getLeagueList()
+              }, 15000)
+        }
 
     };
 
     saveMatchData = async () => {
-        let i = 0;
-        const matchData = await this.matchesRepository.findMatch()
-
-        const saveMatchInterval = setInterval(async () => {
-            if (i === matchData.length) {
-                console.log("=============매치저장종료=============")
-                clearInterval(saveMatchInterval);
-            } else {
-                const findMatchId = await this.matchesRepository.findMatchById(matchData[i].matchId);
-                console.log(findMatchId)
-
-                if (!findMatchId) {
-                    matchData.info.participants.map((data) => {
-                        this.matchesRepository.saveMatchData({
-                            matchId: matchData.metadata.matchId,
-                            championId: data.championId,
-                            championName: data.championName,
-                            championTransform: data.championTransform,
-                            individualPosition: data.individualPosition,
-                            itemList: `[${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}]`,
-                            puuid: data.puuid,
-                            summoner1Id: data.summoner1Id,
-                            summoner2Id: data.summoner2Id,
-                            summonerId: data.summonerId,
-                            summonerName: data.summonerName,
-                            teamPosition: data.teamPosition,
-                            win: data.win,
+        try {
+            let i = 0;
+            const matchList = await this.matchesRepository.findMatch();
+            console.log(matchList.length,"매치리스트")
+            const saveMatchInterval = setInterval(async () => {
+                if (i === matchList.length) {
+                    console.log('=============매치저장종료=============');
+                    clearInterval(saveMatchInterval);
+                } else {
+                    const findMatchId = await this.matchesRepository.findMatchById(
+                        matchList[i].matchId
+                    );
+    
+                    if (!findMatchId) {
+                        console.log(`${i}번째 매치데이터 저장`)
+                        const matchData = await this.api.findMatchData(matchList[i].matchId)
+                        matchData.info.participants.map((data) => {
+                            this.matchesRepository.saveMatchData({
+                                matchId: matchData.metadata.matchId,
+                                championId: data.championId,
+                                championName: data.championName,
+                                championTransform: data.championTransform,
+                                individualPosition: data.individualPosition,
+                                itemList: `[${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}]`,
+                                puuid: data.puuid,
+                                summoner1Id: data.summoner1Id,
+                                summoner2Id: data.summoner2Id,
+                                summonerId: data.summonerId,
+                                summonerName: data.summonerName,
+                                teamPosition: data.teamPosition,
+                                win: data.win,
+                            });
                         });
-                    });                  
-                } else console.log(`${i}번쨰와 동일한 매치데이터 존재함`);
+    
+                    } else console.log(`${i}번쨰와 동일한 매치데이터 존재함`);
+    
+                    i++;
+                }
+            }, 1300);
+        } catch (err) {
+            setTimeout(() => {
+                this.saveMatchData()
+              }, 15000)
+        }
 
-                i++;
-            }
-        }, 500);
     };
 
     getChampion = async (championId) => {
