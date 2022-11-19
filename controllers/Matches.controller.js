@@ -28,7 +28,8 @@ class MatchesController {
 
     save = async (req, res, next) => {
         try {
-            const list = await this.matchesService.saveMatchData();
+            const {tier} = req.params
+            const list = await this.matchesService.saveMatchData(tier.toUpperCase());
             return res.status(200).send(list);
         } catch (err) {
             return next(err);

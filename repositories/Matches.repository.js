@@ -13,8 +13,9 @@ class MatchesRepository {
         return await MatchList.findOne({ where: { matchId } });
     };
 
-    findMatch = async () => {
+    findMatch = async (tier) => {
         return await MatchList.findAll({
+            where: {tier},
             attributes: ['matchId'],
         });
     };
