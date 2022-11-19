@@ -13,14 +13,20 @@ class MatchesRepository {
         return await MatchList.findOne({ where: { matchId } });
     };
 
-    findMatch = async () => {
+    findMatch = async (tier) => {
         return await MatchList.findAll({
+            where: {tier},
             attributes: ['matchId'],
         });
     };
 
     saveMatchList = async (matchId) => {
-        await MatchList.create(matchId);
+        try {
+            await MatchList.create(matchId);
+        } catch (err) {
+            return
+        }
+        
     };
 
     saveMatchData = async (matchData) => {
@@ -34,11 +40,9 @@ class MatchesRepository {
             include: {
                 model: MatchData,
                 where: { championId },
-                attributes: ['championId', 'championName', 'itemList'],
+                attributes: ['championId', 'championName', 'itemList', 'win'],
             },
         });
-
-        console.log(matchDataByChampion[0].dataValues.MatchData[0].dataValues.itemList.split(','))
 
         return matchDataByChampion;
     };

@@ -13,7 +13,7 @@ const headers = {
 };
 
 class API {
-    getLeagueList = async (league) => {
+    getLeagueList = async (league) => { // 챌 그마 마스터 용 리그 서머너 리스트 불러오기
         const tierList = await axios({
             method: 'get',
             url: `https://kr.api.riotgames.com/lol/league/v4/${league}leagues/by-queue/RANKED_SOLO_5x5`,
@@ -43,33 +43,12 @@ class API {
             .catch((error) => {
                 return error.message;
             });
-
+            console.log(`${page}페이지의 소환사리스트`)
             const result = {};
             result.entries = tierList
             result.tier = tierList[0].tier
             return result
     }
-
-    getSummoner = async (tierList,i) => {
-        const summoner = await axios({
-            method: 'get',
-            url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/${tierList.entries[i].summonerId}`,
-            headers:headers,
-        })
-            .then((response) => {
-                return response.data;
-            })
-            .catch((error) => {
-                return error.message;
-            });
-            summoner.tier = tierList.tier
-            // summoner.rank = tierList.entries[i].rank
-            // summoner.leaguePoints = tierList.entries[i].leaguePoints
-            // summoner.wins = tierList.entries[i].wins
-            // summoner.losses = tierList.entries[i].losses
-            return summoner 
-    }
-
 
     getMatchList = async (summoner) => {
   
@@ -105,7 +84,7 @@ class API {
         try {
             const summoner = await axios({
                 method: 'get',
-                url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/${tierList.entries[i].summonerName}`,
+                url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/${tierList.entries[i].summonerId}`,
                 headers: headers,
             })
                 .then((response) => {
@@ -127,6 +106,7 @@ class API {
             }, 15000);
         }
     };
+ 
 
     getMatchList = async (summoner) => {
         try {
@@ -160,7 +140,7 @@ class API {
         }
     };
 
-    findMatchData = async (matchId) => {
+    findMatchData = async (matchId,i) => {
         try {
             const matchData = await axios({
                 method: 'get',
@@ -177,7 +157,7 @@ class API {
             return matchData;
         } catch(err) {
             setTimeout(() => {
-                this.findMatchData(matchId);
+                this.findMatchData(matchId,i);
             }, 15000);
         }
 
