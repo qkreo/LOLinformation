@@ -8,7 +8,7 @@ const headers = {
     'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
     'Accept-Charset':
         'application/x-www-form-urlencoded; charset=UTF-8',
-    Origin: 'https://developer.riotgames.com',
+    'Origin': 'https://developer.riotgames.com',
     'X-Riot-Token': process.env.APIKEY,
 }
 
@@ -27,6 +27,7 @@ class API {
             .catch((error) => {
                 return error.message;
             });
+            
             return tierList
     }
 
@@ -52,7 +53,7 @@ class API {
     getSummoner = async (tierList,i) => {
         const summoner = await axios({
             method: 'get',
-            url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/${tierList.entries[i].summonerName}`,
+            url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/${tierList.entries[i].summonerId}`,
             headers:headers,
         })
             .then((response) => {
@@ -61,11 +62,11 @@ class API {
             .catch((error) => {
                 return error.message;
             });
-            summoner.tier = tierList.tier
-            summoner.rank = tierList.entries[i].rank
-            summoner.leaguePoints = tierList.entries[i].leaguePoints
-            summoner.wins = tierList.entries[i].wins
-            summoner.losses = tierList.entries[i].losses
+            // summoner.tier = tierList.tier
+            // summoner.rank = tierList.entries[i].rank
+            // summoner.leaguePoints = tierList.entries[i].leaguePoints
+            // summoner.wins = tierList.entries[i].wins
+            // summoner.losses = tierList.entries[i].losses
             return summoner 
     }
 

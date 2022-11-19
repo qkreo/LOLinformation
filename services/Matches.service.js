@@ -1,9 +1,7 @@
 require('dotenv').config();
-const axios = require('axios');
 
-const asiaUrl = 'https://asia.api.riotgames.com/lol/';
 const MatchesRepository = require('../repositories/Matches.repository');
-const API = require('../api');
+const API = require('../apiList.js');
 class MatchesService {
     constructor() {
         this.matchesRepository = new MatchesRepository();
@@ -11,6 +9,7 @@ class MatchesService {
     }
 
     getLeagueList = async (league) => {
+        
         const tierList = await this.api.getLeagueList(league);
 
         this.getSummoner(tierList);
@@ -23,16 +22,21 @@ class MatchesService {
     };
 
     getSummoner = async (tierList) => {
+        
         let i = 0;
-
+        
         const saveMatchInterval = setInterval(async () => {
-            if (i === tierList.length) {
+            
+            if (i === tierList.entries.length) {
                 console.log("=============저장종료=============")
                 clearInterval(saveMatchInterval);
             } else {
+
                 const summoner = await this.api.getSummoner(tierList,i);
 
-                this.getMatchList(summoner);
+                console.log(summoner)
+
+                // this.getMatchList(summoner);
 
                 i++;
             }
