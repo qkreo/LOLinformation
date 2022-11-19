@@ -10,16 +10,14 @@ const headers = {
         'application/x-www-form-urlencoded; charset=UTF-8',
     'Origin': 'https://developer.riotgames.com',
     'X-Riot-Token': process.env.APIKEY,
-}
+};
 
 class API {
-
     getLeagueList = async (league) => {
-
         const tierList = await axios({
             method: 'get',
             url: `https://kr.api.riotgames.com/lol/league/v4/${league}leagues/by-queue/RANKED_SOLO_5x5`,
-            headers:headers,
+            headers: headers,
         })
             .then((response) => {
                 return response.data;
@@ -27,16 +25,17 @@ class API {
             .catch((error) => {
                 return error.message;
             });
-            
-            return tierList
-    }
 
-    gettierList = async (division,tier,page) => {
 
+        return tierList;
+    };
+
+
+    gettierList = async (division, tier, page) => {
         const tierList = await axios({
             method: 'get',
             url: `https://kr.api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/${tier}/${division}?page=${page}`,
-            headers:headers,
+            headers: headers,
         })
             .then((response) => {
                 return response.data;
@@ -44,6 +43,7 @@ class API {
             .catch((error) => {
                 return error.message;
             });
+
             const result = {};
             result.entries = tierList
             result.tier = tierList[0].tier
@@ -89,6 +89,7 @@ class API {
             .catch((error) => {
                 return error.message;
             });
+            
             const match = matchList.map((data) => {
                return {
                 matchId:data,
@@ -96,28 +97,93 @@ class API {
                }
 
             })
+
             return match
     };
 
-    findMatchData = async (matchList,i) => {
-
-                const matchData = await axios({
-                    method: 'get',
-                    url: `${asiaUrl}match/v5/matches/${matchList[i].matchId}`,
-                    headers: headers,
-                    responseType: 'json',
+    getSummoner = async (tierList, i) => {
+        try {
+            const summoner = await axios({
+                method: 'get',
+                url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/${tierList.entries[i].summonerName}`,
+                headers: headers,
+            })
+                .then((response) => {
+                    return response.data;
                 })
-                    .then((response) => {
-                        return response.data;
-                    })
-                    .catch((error) => {
-                        return error.message;
-                    });
-                    return matchData
-    }
+                .catch((error) => {
+                    return error.message;
+                });
+            console.log(`서머너${i}번째`, summoner);
+            summoner.tier = tierList.tier;
+            // summoner.rank = tierList.entries[i].rank
+            // summoner.leaguePoints = tierList.entries[i].leaguePoints
+            // summoner.wins = tierList.entries[i].wins
+            // summoner.losses = tierList.entries[i].losses
+            return summoner;
+        } catch (err) {
+            setTimeout(() => {
+                this.getSummoner(tierList, i);
+            }, 15000);
+        }
+    };
+
+    getMatchList = async (summoner) => {
+        try {
+            const matchList = await axios({
+                method: 'get',
+                url: `${asiaUrl}match/v5/matches/by-puuid/${summoner.puuid}/ids`,
+                headers: headers,
+                params: {
+                    queue: 420,
+                    start: 0,
+                    count: 80,
+                },
+            })
+                .then((response) => {
+                    return response.data;
+                })
+                .catch((error) => {
+                    return error.message;
+                });
+            const match = matchList.map((data) => {
+                return {
+                    matchId: data,
+                    tier: summoner.tier,
+                };
+            });
+            return match;
+        } catch (err) {
+            setTimeout(() => {
+                this.getMatchList(summoner);
+            }, 15000);
+        }
+    };
+
+    findMatchData = async (matchId) => {
+        try {
+            const matchData = await axios({
+                method: 'get',
+                url: `${asiaUrl}match/v5/matches/${matchId}`,
+                headers: headers,
+                responseType: 'json',
+            })
+                .then((response) => {
+                    return response.data;
+                })
+                .catch((error) => {
+                    return error.message;
+                });
+            return matchData;
+        } catch(err) {
+            setTimeout(() => {
+                this.findMatchData(matchId);
+            }, 15000);
+        }
+
+    };
 
     getChampion = async (championId) => {
-
         const itemList = [
             3001, 3006, 3009, 3011, 3020, 3026, 3031, 3033, 3036, 3040, 3042,
             3046, 3047, 3050, 3053, 3065, 3071, 3072, 3074, 3075, 3078, 3083,
