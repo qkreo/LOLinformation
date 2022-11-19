@@ -62,7 +62,6 @@ summonerName: {
 type: DataTypes.STRING,
 },
 win: {
-// primaryKey: true,
 type: DataTypes.STRING,
 },
 }, {
