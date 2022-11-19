@@ -1,39 +1,75 @@
-const mongoose = require('mongoose');
+'use strict';
+const {
+Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+class Summoners extends Model {
+/**
+ * Helper method for defining associations.
+ * This method is not a part of Sequelize lifecycle.
+ * The `models/index` file will call this method automatically.
+ */
+static associate(models) {
+  // Likes.belongsTo(models.PharmacyLikes, {
+  //   foreignKey: "pharmacyNum",
+  //   targetKey: "pharmacyNum",
+  // });
+}
+}
+Summoners.init({
 
-const summonerSchema = new mongoose.Schema(
-    {
-        _id: {
-            type: String,
-            required: true,
-        },
-        accountId: {
-            type: String,
-            required: true,
-        },
-        puuid: {
-            type: String,
-        },
-        tier: {
-            type: String,
-        },
-        name: {
-            type: String,
-        },
-        profileIconId: {
-            type: Number,
-        },
-        revisionDate: {
-            type: Number,
-        },
-        summonerLevel: {
-            type: Number,
-        },
-    },
-    {
-        timestamps: true,
-    }
-);
+id: {
+  type: DataTypes.STRING,
+  unique:true
+},
+accountId: {
+  type: DataTypes.STRING,
+  unique:true
+},
+puuid: {
+  primaryKey: true,
+  type: DataTypes.STRING,
+},
+name: {
+  type: DataTypes.STRING,
+  unique:true
+},
+profileIconId: {
+  // primaryKey: true,
+  type: DataTypes.STRING,
+},
+revisionDate: {
+  // primaryKey: true,
+  type: DataTypes.INTEGER,
+},
+summonerLevel: {
+  // primaryKey: true,
+  type: DataTypes.INTEGER,
+},
+tier: {
+  // primaryKey: true,
+  type: DataTypes.STRING,
+},
+rank: {
+  // primaryKey: true,
+  type: DataTypes.STRING,
+},
+leaguePoints: {
+  // primaryKey: true,
+  type: DataTypes.STRING,
+},
+wins: {
+  // primaryKey: true,
+  type: DataTypes.STRING,
+},
+losses: {
+  // primaryKey: true,
+  type: DataTypes.STRING,
+},
 
-//새로운 mongoose.schema를 만듦
-module.exports = mongoose.model('summoners', summonerSchema);
-//모듈로 내보내 줄때, mongoose.model을 내보낼건데 그거 생긴게 postSchema처럼 생겼다~
+}, {
+sequelize,
+modelName: 'Summoners',
+});
+return Summoners;
+};

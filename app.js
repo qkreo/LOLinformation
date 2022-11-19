@@ -2,9 +2,7 @@ const express = require('express');
 const app = express();
 const port = 5000;
 const http = require('http').createServer(app); 
-
-const mongoose = require('./models/index');
-mongoose()
+require('./models');
 
 app.use(express.static("assets"));
 

@@ -1,105 +1,121 @@
 require('dotenv').config();
 const axios = require('axios');
-
 const asiaUrl = 'https://asia.api.riotgames.com/lol/';
-const MatchesRepository = require('../repositories/Matches.repository');
-const API = require('../api');
-class MatchesService {
-    constructor() {
-        this.matchesRepository = new MatchesRepository();
-        this.api = new API();
-    }
+
+const headers = {
+    'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
+    'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+    'Accept-Charset':
+        'application/x-www-form-urlencoded; charset=UTF-8',
+    Origin: 'https://developer.riotgames.com',
+    'X-Riot-Token': process.env.APIKEY,
+}
+
+class API {
 
     getLeagueList = async (league) => {
-        const tierList = await this.api.getLeagueList(league);
 
-        this.getSummoner(tierList);
-    };
+        const tierList = await axios({
+            method: 'get',
+            url: `https://kr.api.riotgames.com/lol/league/v4/${league}leagues/by-queue/RANKED_SOLO_5x5`,
+            headers:headers,
+        })
+            .then((response) => {
+                return response.data;
+            })
+            .catch((error) => {
+                return error.message;
+            });
+            return tierList
+    }
 
     gettierList = async (division,tier,page) => {
-        const tierList = await this.api.gettierList(division,tier,page);
 
-        this.getSummoner(tierList);
-    };
+        const tierList = await axios({
+            method: 'get',
+            url: `https://kr.api.riotgames.com/lol/league/v4/entries/RANKED_SOLO_5x5/${tier}/${division}?page=${page}`,
+            headers:headers,
+        })
+            .then((response) => {
+                return response.data;
+            })
+            .catch((error) => {
+                return error.message;
+            });
+            const result = {};
+            result.entries = tierList
+            result.tier = tierList[0].tier
+            return result
+    }
 
-    getSummoner = async (tierList) => {
-        let i = 0;
+    getSummoner = async (tierList,i) => {
+        const summoner = await axios({
+            method: 'get',
+            url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/${tierList.entries[i].summonerName}`,
+            headers:headers,
+        })
+            .then((response) => {
+                return response.data;
+            })
+            .catch((error) => {
+                return error.message;
+            });
+            summoner.tier = tierList.tier
+            summoner.rank = tierList.entries[i].rank
+            summoner.leaguePoints = tierList.entries[i].leaguePoints
+            summoner.wins = tierList.entries[i].wins
+            summoner.losses = tierList.entries[i].losses
+            return summoner 
+    }
 
-        const saveMatchInterval = setInterval(async () => {
-            if (i === tierList.length) {
-                console.log("=============저장종료=============")
-                clearInterval(saveMatchInterval);
-            } else {
-                const summoner = await this.api.getSummoner(tierList,i);
-
-                this.getMatchList(summoner);
-
-                i++;
-            }
-        }, 2000);
-
-    };
 
     getMatchList = async (summoner) => {
-        const matchList = await this.api.getMatchList(summoner);
+  
+        const matchList = await axios({
+            method: 'get',
+            url: `${asiaUrl}match/v5/matches/by-puuid/${summoner.puuid}/ids`,
+            headers:headers,
+            params: {
+                queue: 420,
+                start: 0,
+                count: 80,
+            },
+        })
+            .then((response) => {
+                return response.data;
+            })
+            .catch((error) => {
+                return error.message;
+            });
+            const match = matchList.map((data) => {
+               return {
+                matchId:data,
+                tier:summoner.tier
+               }
 
-        matchList.map(async (match) => {
-            const findmatch = await this.matchesRepository.findMatchList(match.matchId);
-
-            if (!findmatch) this.matchesRepository.saveMatchList(match);
-            else return;
-        });
-
+            })
+            return match
     };
 
-    saveMatchData = async () => {
-        let i = 0;
-        const matchData = await this.matchesRepository.findMatch()
+    findMatchData = async (matchList,i) => {
 
-        const saveMatchInterval = setInterval(async () => {
-            if (i === matchData.length) {
-                console.log("=============매치저장종료=============")
-                clearInterval(saveMatchInterval);
-            } else {
-                const findMatchId = await this.matchesRepository.findMatchById(matchData[i].matchId);
-                console.log(findMatchId)
-
-                if (!findMatchId) {
-                    matchData.info.participants.map((data) => {
-                        this.matchesRepository.saveMatchData({
-                            matchId: matchData.metadata.matchId,
-                            championId: data.championId,
-                            championName: data.championName,
-                            championTransform: data.championTransform,
-                            individualPosition: data.individualPosition,
-                            itemList: `[${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}]`,
-                            puuid: data.puuid,
-                            summoner1Id: data.summoner1Id,
-                            summoner2Id: data.summoner2Id,
-                            summonerId: data.summonerId,
-                            summonerName: data.summonerName,
-                            teamPosition: data.teamPosition,
-                            win: data.win,
-                        });
-                    });                  
-                } else console.log(`${i}번쨰와 동일한 매치데이터 존재함`);
-
-                i++;
-            }
-        }, 500);
-    };
+                const matchData = await axios({
+                    method: 'get',
+                    url: `${asiaUrl}match/v5/matches/${matchList[i].matchId}`,
+                    headers: headers,
+                    responseType: 'json',
+                })
+                    .then((response) => {
+                        return response.data;
+                    })
+                    .catch((error) => {
+                        return error.message;
+                    });
+                    return matchData
+    }
 
     getChampion = async (championId) => {
-        const tier = [
-            'challenger',
-            'grandmaster',
-            'master',
-            'diamond',
-            'platinum',
-            'gold',
-            'silver',
-            'bronze',
-        ];
 
         const itemList = [
             3001, 3006, 3009, 3011, 3020, 3026, 3031, 3033, 3036, 3040, 3042,
@@ -206,4 +222,4 @@ class MatchesService {
     };
 }
 
-module.exports = MatchesService;
+module.exports = API;
