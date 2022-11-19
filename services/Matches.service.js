@@ -11,7 +11,8 @@ class MatchesService {
     }
 
     getLeagueList = async (league) => {
-        
+        // 챌 ,그마 ,마스터용
+
         const tierList = await this.api.getLeagueList(league);
 
         this.getSummoner(tierList);
@@ -32,20 +33,17 @@ class MatchesService {
 
                     this.getSummoner(tierList);
 
-                    page++;
+                    page = page + 2;
                 }
-            }, 120000);
+            }, 180000);
         } catch (err) {
             setTimeout(() => {
                 this.gettierList(division, tier, page);
-            }, 15000);
+            }, 180000);
         }
-
-
     };
 
     getSummoner = async (tierList) => {
-
         try {
             let i = 0;
             console.log(tierList.entries.length);
@@ -82,15 +80,16 @@ class MatchesService {
         } catch (err) {
             setTimeout(() => {
                 this.getLeagueList();
-            }, 15000);
+            }, 20000);
         }
     };
 
-    saveMatchData = async () => {
+    saveMatchData = async (tier) => {
         try {
-            let i = 0;
-            const matchList = await this.matchesRepository.findMatch();
+            let i = 938;
+            const matchList = await this.matchesRepository.findMatch(tier);
             console.log(matchList.length, '매치리스트');
+
             const saveMatchInterval = setInterval(async () => {
                 if (i === matchList.length) {
                     console.log('=============매치저장종료=============');
@@ -100,12 +99,16 @@ class MatchesService {
                         await this.matchesRepository.findMatchById(
                             matchList[i].matchId
                         );
-
                     if (!findMatchId) {
                         console.log(`${i}번째 매치데이터 저장`);
+
                         const matchData = await this.api.findMatchData(
-                            matchList[i].matchId
+                            matchList[i].matchId,
+                            i
                         );
+
+                        if (typeof matchData === String) throw new Error();
+
                         matchData.info.participants.map((data) => {
                             this.matchesRepository.saveMatchData({
                                 matchId: matchData.metadata.matchId,
@@ -113,7 +116,7 @@ class MatchesService {
                                 championName: data.championName,
                                 championTransform: data.championTransform,
                                 individualPosition: data.individualPosition,
-                                itemList: `[${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}]`,
+                                itemList: `${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}`,
                                 puuid: data.puuid,
                                 summoner1Id: data.summoner1Id,
                                 summoner2Id: data.summoner2Id,
