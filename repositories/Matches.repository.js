@@ -1,34 +1,32 @@
-const {summoners,MatchData,MatchList} = require('../models');
+const { summoners, MatchData, MatchList } = require('../models');
 
 class MatchesRepository {
-
     // findUserList = async () => {
     //     return await summoners.find({tier:"DIAMOND"})
     // }
 
-    findMatchById = async (matchId) => {      
-        return await MatchData.findOne({where:{matchId}})
+    findMatchById = async (matchId) => {
+        return await MatchData.findOne({ where: { matchId } });
     };
 
     findMatchList = async (matchId) => {
-       return await MatchList.findOne({where:{matchId}})
-    }
+        return await MatchList.findOne({ where: { matchId } });
+    };
 
     findMatch = async () => {
         return await MatchList.findAll({
             attributes: ['matchId'],
-        })
-    }
-
-    saveMatchList = async (matchId) => {
-        await MatchList.create(matchId)
-    }
-
-    saveMatchData = async (matchData) => {
-        await MatchData.create(matchData)
-
+        });
     };
 
+    saveMatchList = async (matchId) => {
+        await MatchList.create(matchId);
+    };
+
+    saveMatchData = async (matchData) => {
+        await MatchData.create(matchData);
+        
+    };
 
     // getChampionById = async (championId, tier) => {
     //     // console.log(tier)
@@ -65,11 +63,11 @@ class MatchesRepository {
 
     //         return champion;
     //     }
-        
+
     // };
 
     // getChampionByIdtest = async (championId) => {
-        
+
     //     const champion = await Challenger.find({ championId: championId });
 
     //     return champion;
@@ -79,7 +77,7 @@ class MatchesRepository {
     // getEnemyById = async (championId, matchData) => {
 
     //     let enemy = [];
-        
+
     //     // for (let i = 0; i < matchData.length; i++) {
 
     //         const result = await Challenger.find({ matchData
@@ -92,10 +90,9 @@ class MatchesRepository {
     //         // enemy.push(result)
 
     //     // }
-        
+
     //     // console.log(enemy)
     // }
-
 }
 
 module.exports = MatchesRepository;
