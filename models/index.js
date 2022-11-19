@@ -1,16 +1,54 @@
-const mongoose = require("mongoose");
-require('dotenv').config();
+'use strict';
 
-const connect = () => {
-mongoose
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+const process = require('process');
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.js')[env];
+const db = {};
 
-// .connect(`mongodb+srv://qkero407:${process.env.SECRET_KEY}@cluster0.iao4kcr.mongodb.net/test`)
-.connect(`mongodb+srv://test:${process.env.SECRET_KEY}@cluster0.sojhuso.mongodb.net/test`)
-.catch(err => console.log(err));
-};
+let sequelize;
+if (config.use_env_variable) {
+    sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else {
+    sequelize = new Sequelize(
+        config.database,
+        config.username,
+        config.password,
+        config
+    );
+}
 
-mongoose.connection.on("error", err => {
-console.error("몽고디비 연결 에러", err);
+fs.readdirSync(__dirname)
+    .filter((file) => {
+        return (
+            file.indexOf('.') !== 0 &&
+            file !== basename &&
+            file.slice(-3) === '.js'
+        );
+    })
+    .forEach((file) => {
+        const model = require(path.join(__dirname, file))(
+            sequelize,
+            Sequelize.DataTypes
+        );
+        db[model.name] = model;
+    });
+
+Object.keys(db).forEach((modelName) => {
+    if (db[modelName].associate) {
+        db[modelName].associate(db);
+    }
 });
 
-module.exports = connect;
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+
+sequelize.sync({ force: false });
+
+// force true 시 디비 날려버리고 새로만듭니다! 첫실행 후 꼭 false로 바꿔주기!
+
+module.exports = db;

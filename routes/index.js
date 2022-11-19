@@ -5,5 +5,4 @@ const matchesRouter = require('./Match.routes')
 
 router.use('/match', matchesRouter)
 
-
 module.exports = router;
