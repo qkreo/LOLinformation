@@ -18,33 +18,13 @@ type: Number
 individualPosition: {
     type: String
     },
-item0: {
-type: Number
-},
-item1: {
-type: Number
-},
-item2: {
-type: Number
-},
-item3: {
-type: Number
-},
-item4: {
-type: Number
-},
-item5: {
-type: Number
-},
-item6: {
-type: Number
+itemList: {
+type: String
 },
 lane: {
 type: String
 },
-perks: {
-type: Object
-},
+
 puuid: {
 type: String
 },
@@ -61,6 +41,9 @@ summonerId: {
 type: String
 },
 summonerName: {
+type: String
+},
+Tier: {
 type: String
 },
 teamPosition: {

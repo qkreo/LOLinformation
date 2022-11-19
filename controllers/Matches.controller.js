@@ -10,9 +10,11 @@ class MatchesController {
         const {sumNum,num} = req.params
 
         try {
+
             const summoner = await this.matchesService.getMatchData(sumNum,num)
             
             return res.status(200).send(summoner)
+
 
         } catch (err) {
 
