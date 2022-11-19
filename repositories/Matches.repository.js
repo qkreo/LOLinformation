@@ -20,7 +20,12 @@ class MatchesRepository {
     };
 
     saveMatchList = async (matchId) => {
-        await MatchList.create(matchId);
+        try {
+            await MatchList.create(matchId);
+        } catch (err) {
+            return
+        }
+        
     };
 
     saveMatchData = async (matchData) => {

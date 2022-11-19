@@ -50,27 +50,7 @@ class API {
             return result
     }
 
-    getSummoner = async (tierList,i) => {
-        const summoner = await axios({
-            method: 'get',
-            url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/${tierList.entries[i].summonerId}`,
-            headers:headers,
-        })
-            .then((response) => {
-                return response.data;
-            })
-            .catch((error) => {
-                return error.message;
-            });
-            // summoner.tier = tierList.tier
-            // summoner.rank = tierList.entries[i].rank
-            // summoner.leaguePoints = tierList.entries[i].leaguePoints
-            // summoner.wins = tierList.entries[i].wins
-            // summoner.losses = tierList.entries[i].losses
-            return summoner 
-    }
-
-
+  
     getMatchList = async (summoner) => {
   
         const matchList = await axios({
@@ -105,7 +85,7 @@ class API {
         try {
             const summoner = await axios({
                 method: 'get',
-                url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/${tierList.entries[i].summonerName}`,
+                url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/${tierList.entries[i].summonerId}`,
                 headers: headers,
             })
                 .then((response) => {
@@ -127,6 +107,7 @@ class API {
             }, 15000);
         }
     };
+ 
 
     getMatchList = async (summoner) => {
         try {
