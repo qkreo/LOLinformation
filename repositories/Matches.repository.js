@@ -31,46 +31,21 @@ class MatchesRepository {
 
     saveMatchData = async (matchData) => {
         await MatchData.create(matchData);
-        
     };
 
-    // getChampionById = async (championId, tier) => {
-    //     // console.log(tier)
-    //     if(tier === 'challenger') {
-    //         const champion = await Challenger.find({ championId: championId });
+    getChampionById = async (championId, tier) => {
+        const matchDataByChampion = await MatchList.findAll({
+            where: { tier },
+            attributes: ['matchId'],
+            include: {
+                model: MatchData,
+                where: { championId },
+                attributes: ['championId', 'championName', 'itemList', 'win'],
+            },
+        });
 
-    //         return champion;
-    //     } else if (tier === 'grandmaster') {
-    //         const champion = await Grandmaster.find({ championId: championId });
-
-    //         return champion;
-    //     } else if (tier === 'master') {
-    //         const champion = await Master.find({ championId: championId });
-
-    //         return champion;
-    //     } else if (tier === 'diamond') {
-    //         const champion = await Diamond.find({ championId: championId });
-
-    //         return champion;
-    //     } else if (tier === 'platinum') {
-    //         const champion = await Platinum.find({ championId: championId });
-
-    //         return champion;
-    //     } else if (tier === 'gold') {
-    //         const champion = await Gold.find({ championId: championId });
-
-    //         return champion;
-    //     } else if (tier === 'silver') {
-    //         const champion = await Silver.find({ championId: championId });
-
-    //         return champion;
-    //     } else if (tier === 'bronze') {
-    //         const champion = await Bronze.find({ championId: championId });
-
-    //         return champion;
-    //     }
-
-    // };
+        return matchDataByChampion;
+    };
 
     // getChampionByIdtest = async (championId) => {
 
@@ -80,25 +55,34 @@ class MatchesRepository {
 
     // }
 
-    // getEnemyById = async (championId, matchData) => {
+    getEnemyById = async (championId, matchData) => {
+        let enemy = [];
 
-    //     let enemy = [];
+        // for (let i = 0; i < matchData.length; i++) {
 
-    //     // for (let i = 0; i < matchData.length; i++) {
+        const result = await Challenger.find(
+            {
+                matchData,
+                // championId: {$ne : championId },
+                // matchId: ,
+                // individualPosition: matchData[i].individualPosition
+            },
+            {
+                _id: 0,
+                championId: 1,
+                individualPosition: 1,
+                championName: 1,
+                win: 1,
+            }
+        );
 
-    //         const result = await Challenger.find({ matchData
-    //             // championId: {$ne : championId },
-    //             // matchId: ,
-    //             // individualPosition: matchData[i].individualPosition
-    //         },{_id: 0, championId: 1, individualPosition: 1, championName: 1, win: 1});
+        console.log(result);
+        // enemy.push(result)
 
-    //         console.log(result);
-    //         // enemy.push(result)
+        // }
 
-    //     // }
-
-    //     // console.log(enemy)
-    // }
+        // console.log(enemy)
+    };
 }
 
 module.exports = MatchesRepository;
