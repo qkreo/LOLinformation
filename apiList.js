@@ -50,7 +50,6 @@ class API {
             return result
     }
 
-  
     getMatchList = async (summoner) => {
   
         const matchList = await axios({
