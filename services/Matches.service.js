@@ -19,122 +19,101 @@ class MatchesService {
     };
 
     gettierList = async (division, tier, page) => {
-        try {
-            const saveMatchInterval = setInterval(async () => {
-                if (page === 10) {
-                    console.log('=============저장종료=============');
-                    clearInterval(saveMatchInterval);
-                } else {
-                    const tierList = await this.api.gettierList(
-                        division,
-                        tier,
-                        page
-                    );
+        const saveMatchInterval = setInterval(async () => {
+            if (page === 10) {
+                console.log('=============저장종료=============');
+                clearInterval(saveMatchInterval);
+            } else {
+                const tierList = await this.api.gettierList(
+                    division,
+                    tier,
+                    page
+                );
 
-                    this.getSummoner(tierList);
+                this.getSummoner(tierList);
 
-                    page = page + 2;
-                }
-            }, 180000);
-        } catch (err) {
-            setTimeout(() => {
-                this.gettierList(division, tier, page);
-            }, 180000);
-        }
+                page = page + 2;
+            }
+        }, 240000);
     };
 
     getSummoner = async (tierList) => {
-        try {
-            let i = 0;
-            console.log(tierList.entries.length);
-            const saveMatchInterval = setInterval(async () => {
-                if (i === tierList.entries.length) {
-                    console.log('=============저장종료=============');
-                    clearInterval(saveMatchInterval);
-                } else {
-                    const summoner = await this.api.getSummoner(tierList, i);
-
+        let i = 0;
+        console.log(tierList.entries.length);
+        const saveMatchInterval = setInterval(async () => {
+            if (i === tierList.entries.length) {
+                console.log('=============저장종료=============');
+                clearInterval(saveMatchInterval);
+            } else {
+                const summoner = await this.api.getSummoner(tierList, i);
+                if (typeof matchData === 'object') {
                     this.getMatchList(summoner);
-
-                    i++;
+                } else {
+                    console.log('이거 의미있나111');
+                    return;
                 }
-            }, 3000);
-        } catch (err) {
-            setTimeout(() => {
-                this.getSummoner(tierList);
-            }, 15000);
-        }
+                i++;
+            }
+        }, 2000);
     };
 
     getMatchList = async (summoner) => {
-        try {
-            const matchList = await this.api.getMatchList(summoner);
+        const matchList = await this.api.getMatchList(summoner);
 
-            matchList.map(async (match) => {
-                const findMatch = await this.matchesRepository.findMatchList(
-                    match.matchId
-                );
-                if (!findMatch) this.matchesRepository.saveMatchList(match);
-                else console.log('중복');
-            });
-        } catch (err) {
-            setTimeout(() => {
-                this.getLeagueList();
-            }, 20000);
-        }
+        matchList.map(async (match) => {
+            const findMatch = await this.matchesRepository.findMatchList(
+                match.matchId
+            );
+            if (!findMatch) this.matchesRepository.saveMatchList(match);
+            else console.log('중복');
+        });
     };
 
     saveMatchData = async (tier) => {
-        try {
-            let i = 7439;
-            const matchList = await this.matchesRepository.findMatch(tier);
-            console.log(matchList.length, '매치리스트');
-            const saveMatchInterval = setInterval(async () => {
-                if (i === matchList.length) {
-                    console.log('=============매치저장종료=============');
-                    clearInterval(saveMatchInterval);
-                } else {
-                    const findMatchId =
-                        await this.matchesRepository.findMatchById(
-                            matchList[i].matchId
-                        );
-                    if (!findMatchId) {
-                        console.log(`${i}번째 매치데이터 저장`);
-                        const matchData = await this.api.findMatchData(
-                            matchList[i].matchId,
-                            i
-                        ); 
-                        if(typeof matchData === "object") {
-                            matchData.info.participants.map((data) => {
-                                this.matchesRepository.saveMatchData({
-                                    matchId: matchData.metadata.matchId,
-                                    championId: data.championId,
-                                    championName: data.championName,
-                                    championTransform: data.championTransform,
-                                    individualPosition: data.individualPosition,
-                                    itemList: `${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}`,
-                                    puuid: data.puuid,
-                                    summoner1Id: data.summoner1Id,
-                                    summoner2Id: data.summoner2Id,
-                                    summonerId: data.summonerId,
-                                    summonerName: data.summonerName,
-                                    teamPosition: data.teamPosition,
-                                    win: data.win,
-                                });
+        let i = 13401;
+        const matchList = await this.matchesRepository.findMatch(tier);
+        console.log(matchList.length, '매치리스트');
+        const saveMatchInterval = setInterval(async () => {
+            if (i === matchList.length) {
+                console.log('=============매치저장종료=============');
+                clearInterval(saveMatchInterval);
+            } else {
+                const findMatchId = await this.matchesRepository.findMatchById(
+                    matchList[i].matchId
+                );
+                if (!findMatchId) {
+                    console.log(`${i}번째 매치데이터 저장`);
+                    const matchData = await this.api.findMatchData(
+                        matchList[i].matchId,
+                        i
+                    );
+                    if (typeof matchData === 'object') {
+                        matchData.info.participants.map((data) => {
+                            this.matchesRepository.saveMatchData({
+                                matchId: matchData.metadata.matchId,
+                                championId: data.championId,
+                                championName: data.championName,
+                                championTransform: data.championTransform,
+                                individualPosition: data.individualPosition,
+                                itemList: `${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}`,
+                                puuid: data.puuid,
+                                summoner1Id: data.summoner1Id,
+                                summoner2Id: data.summoner2Id,
+                                summonerId: data.summonerId,
+                                summonerName: data.summonerName,
+                                teamPosition: data.teamPosition,
+                                win: data.win,
                             });
-                        } else {
-                            console.log("이거 의미있나111")
-                            return
-                        }
-                      
-                    } else console.log(`${i}번쨰와 동일한 매치데이터 존재함`);
+                        });
+                    } else {
+                        console.log('이거 의미있나111');
+                        return;
+                    }
+                } else console.log(`${i}번쨰와 동일한 매치데이터 존재함`);
 
-                    i++;
-                }
-            }, 1500);
-        } catch (err) {
-            console.log("이거 의미있나222")
-        }
+                i++;
+            }
+        }, 1500);
     };
 
     getChampion = async (championId) => {
