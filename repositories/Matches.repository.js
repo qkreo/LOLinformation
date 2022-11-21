@@ -17,6 +17,7 @@ class MatchesRepository {
         return await MatchList.findAll({
             where: {tier},
             attributes: ['matchId'],
+            order: [["createdAt", "DESC"]]
         });
     };
 
@@ -37,10 +38,12 @@ class MatchesRepository {
         const matchDataByChampion = await MatchList.findAll({
             where: { tier },
             attributes: ['matchId'],
+            order: [["createdAt", "DESC"]],
             include: {
                 model: MatchData,
                 where: { championId },
                 attributes: ['championId', 'championName', 'itemList', 'win'],
+                order: [["createdAt", "DESC"]]
             },
         });
 
