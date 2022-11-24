@@ -31,7 +31,7 @@ class API {
         return summonerList;
     };
 
-    gettierList = async (division, tier, page) => {
+    getTierList = async (division, tier, page) => {
         const tierList = await axios({
             method: 'get',
             url: `${leagueUrl}v4/entries/RANKED_SOLO_5x5/${tier}/${division}?page=${page}`,
@@ -111,10 +111,11 @@ class API {
             }
     };
 
-    findMatchData = async (matchId) => {
+    findMatchData = async (match) => {
+
         const matchData = await axios({
             method: 'get',
-            url: `${asiaUrl}match/v5/matches/${matchId}`,
+            url: `${asiaUrl}match/v5/matches/${match.matchId}`,
             headers: headers,
             responseType: 'json',
         })
@@ -123,8 +124,9 @@ class API {
             })
             .catch((error) => {
                 console.log(error.message);
-                return
+                return error.message;
             });
+            matchData.tier = match.tier
             return matchData
     };
 }

@@ -21,49 +21,90 @@ class MatchesService {
 
     getTierList = async (division, tier, page) => {
         console.log(tier, '데이터수집 시작');
-        const saveMatchInterval = setInterval(async () => {
-            if (page === 10) {
-                console.log('=============저장종료=============');
-                clearInterval(saveMatchInterval);
-            } else {
-                const leagueSummonerList = await this.api.gettierList(
-                    division,
-                    tier,
-                    page
-                );
 
-                this.getSummoner(leagueSummonerList);
+        if (page === 6) {
+            console.log(`=============${tier}List저장종료=============`);
 
-                page = page + 2;
+            switch (tier) {
+                case 'DIAMOND':
+                    this.getTierList('I', 'PLATINUM', '0');
+                    break;
+                case 'PLATINUM':
+                    this.getTierList('I', 'GOLD', '0');
+                    break;
+                case 'GOLD':
+                    this.getTierList('I', 'SILVER', '0');
+                    break;
+                case 'SILVER':
+                    this.getTierList('I', 'BRONZE', '0');
+                    break;
+                default:
+                    console.log('============getTierList=========');
+                    this.saveMatchData('challenger');
+                    break;
             }
-        }, 240000);
+        } else {
+            const leagueSummonerList = await this.api.getTierList(
+                division,
+                tier,
+                page
+            );
+
+            this.getSummoner(leagueSummonerList, page);
+        }
     };
 
-    getSummoner = async (leagueSummonerList) => {
+    getSummoner = async (leagueSummonerList, page) => {
         let i = 0;
         console.log(leagueSummonerList.entries.length);
+        if(leagueSummonerList.tier === Master) leagueSummonerList.entries.length = 1000
+        console.log(leagueSummonerList.entries.length);
         const saveMatchInterval = setInterval(async () => {
+            
             if (i === leagueSummonerList.entries.length) {
                 console.log('=============저장종료=============');
                 clearInterval(saveMatchInterval);
-                if (leagueSummonerList.tier === 'CHALLENGER')
-                    this.getLeagueList('grandmaster');
-                else if (leagueSummonerList.tier === 'GRANDMASTER')
-                    this.getLeagueList('master');
-                else
-                    console.log(
-                        '챌~마스터 매치리스트 업데이트를 완료하였습니다'
-                    );
+                switch (leagueSummonerList.tier) {
+                    case 'CHALLENGER':
+                        this.getLeagueList('grandmaster');
+                        break;
+                    case 'GRANDMASTER':
+                        this.getLeagueList('master');
+                        break;
+                    case 'MASTER':
+                        this.getTierList('I', 'DIAMOND', '0');
+                        break;
+                    case 'DIAMOND':
+                        page = page + 2;
+                        this.getTierList('I', 'DIAMOND', page);
+                        break;
+                    case 'PLATINUM':
+                        page = page + 2;
+                        this.getTierList('I', 'PLATINUM', page);
+                        break;
+                    case 'GOLD':
+                        page = page + 2;
+                        this.getTierList('I', 'GOLD', page);
+                        break;
+                    case 'SILVER':
+                        page = page + 2;
+                        this.getTierList('I', 'SILVER', page);
+                        break;
+                    case 'BRONZE':
+                        page = page + 2;
+                        this.getTierList('I', 'BRONZE', page);
+                        break;
+                    // default : this.saveMatchData('challenger');
+                    // break;
+                }
             } else {
                 const summoner = await this.api.getSummoner(
                     leagueSummonerList,
                     i
                 );
                 if (typeof summoner === 'object') this.getMatchList(summoner);
-                else {
-                    console.log('API 호출실패로 대기');
-                    return;
-                }
+                else return console.log('API 호출실패로 대기');
+            
                 i++;
             }
         }, 1300);
@@ -81,15 +122,16 @@ class MatchesService {
                 else console.log(`이미 저장된 매치 ${match.matchId} 입니다`);
             });
         } else {
-            console.log('API 호출실패로 대기');
-            return;
+            return console.log('API 호출실패로 대기');
         }
     };
 
     saveMatchData = async (tier) => {
-        let i = 23761;
+        if (tier === undefined) tier = 'CHALLENGER';
+        let i = 0;
         const matchList = await this.matchesRepository.findMatch(tier);
         console.log(matchList.length, '매치리스트');
+
         const saveMatchInterval = setInterval(async () => {
             if (i === matchList.length) {
                 console.log('=============매치저장종료=============');
@@ -99,35 +141,69 @@ class MatchesService {
                     matchList[i].matchId
                 );
                 if (!findMatchId) {
-                    console.log(`${i}번째 매치데이터 저장`);
+                    console.log(`${tier}티어${i}번째 매치데이터 저장`);
                     const matchData = await this.api.findMatchData(
-                        matchList[i].matchId,
+                        matchList[i],
                         i
                     );
-                    if (typeof matchData === 'object') {
-                        matchData.info.participants.map((data) => {
-                            this.matchesRepository.saveMatchData({
-                                matchId: matchData.metadata.matchId,
-                                championId: data.championId,
-                                championName: data.championName,
-                                championTransform: data.championTransform,
-                                individualPosition: data.individualPosition,
-                                itemList: `${data.item0},${data.item1},${data.item2},${data.item3},${data.item4},${data.item5}`,
-                                puuid: data.puuid,
-                                summoner1Id: data.summoner1Id,
-                                summoner2Id: data.summoner2Id,
-                                summonerId: data.summonerId,
-                                summonerName: data.summonerName,
-                                teamPosition: data.teamPosition,
-                                win: data.win,
-                            });
-                        });
-                    } else {
-                        console.log('API 호출실패로 대기');
-                        return;
-                    }
-                } else console.log(`${i}번쨰와 동일한 매치데이터 존재함`);
+                    switch (matchData) {
+                        case 'Request failed with status code 404':
+                            await this.matchesRepository.deleteMatchList(
+                                matchList[i].matchId
+                            );
+                            break;
+                        case 'Request failed with status code 429':
+                            console.log('API 호출실패로 대기');
+                            return;
+                        case 'connect ETIMEDOUT 103.240.225.13:443':
+                            console.log('API 호출실패로 대기');
+                            return;
+                        default :
+                            matchData.info.participants.map((data) => {
+                                const itemList = [data.item0,data.item1,data.item2,data.item3,data.item4,data.item5]
+                                const result = itemList.filter((data) => {return data !== 0;});
+                                const textItemList = result.join()
+                                
+                                const unixDate = `${matchData.info.gameStartTimestamp}`
+                                const realDate = unixDate.substring(0,10)                             
+                                const matchDate = new Date(realDate*1000)
 
+                                this.matchesRepository.saveMatchData({
+                                    matchId: matchData.metadata.matchId,
+                                    matchTier: matchData.tier,
+                                    matchDate:matchDate,
+                                    championId: data.championId,
+                                    championName: data.championName,
+                                    championTransform: data.championTransform,                                   
+                                    itemList: textItemList,                                  
+                                    summoner1Id: data.summoner1Id,
+                                    summoner2Id: data.summoner2Id,                                   
+                                    summonerName: data.summonerName,
+                                    teamPosition: data.teamPosition,
+                                    win: data.win,
+                                });
+                            });
+                            break;
+
+                    }
+                } else {
+                    console.log(
+                        `${tier}티어 ${i}번쨰와 동일한 매치데이터 존재함`
+                    );
+                    console.log(`${tier} 매치데이터 업데이트를 완료하였습니다`);
+                    clearInterval(saveMatchInterval);
+
+                    switch (tier) {
+                        case 'CHALLENGER':
+                            this.saveMatchData('GRANDMASTER');
+                            break;
+                        case 'GRANDMASTER':
+                            this.saveMatchData('MASTER');
+                            break;
+                        default:
+                            console.log('매치 저장 종료 ');
+                    }
+                }
                 i++;
             }
         }, 1200);
@@ -250,6 +326,7 @@ class MatchesService {
         let winRateByItemtoArray = [];
 
         for (let j = 0; j < tier.length; j++) {
+
             const champion = await this.matchesRepository.getChampionById(
                 championId,
                 tier[j]

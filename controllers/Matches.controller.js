@@ -39,7 +39,6 @@ class MatchesController {
 
     getChampion = async (req, res, next) => {
         const { championId } = req.params;
-
         try {
             const champion = await this.matchesService.getChampion(championId);
 
