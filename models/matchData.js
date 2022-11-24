@@ -20,6 +20,12 @@ MatchData.init({
 matchId: {
 type: DataTypes.STRING,
 },
+matchTier :{
+type: DataTypes.STRING,
+},
+matchDate:{
+type: DataTypes.DATE,
+},
 championId: {
 type: DataTypes.INTEGER,
 },
@@ -29,36 +35,19 @@ type: DataTypes.STRING,
 championTransform: {
 type: DataTypes.INTEGER,
 },
-individualPosition: {
-// primaryKey: true,
-type: DataTypes.STRING,
-},
 teamPosition: {
-// primaryKey: true,
 type: DataTypes.STRING,
 },
 itemList: {
-// primaryKey: true,
 type: DataTypes.STRING,
 },
 summoner1Id: {
-// primaryKey: true,
 type: DataTypes.INTEGER,
 },
 summoner2Id: {
-// primaryKey: true,
 type: DataTypes.INTEGER,
 },
-puuid: {
-// primaryKey: true,
-type: DataTypes.STRING,
-},
-summonerId: {
-// primaryKey: true,
-type: DataTypes.STRING,
-},
 summonerName: {
-// primaryKey: true,
 type: DataTypes.STRING,
 },
 win: {
