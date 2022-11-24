@@ -126,8 +126,13 @@ class API {
                 console.log(error.message);
                 return error.message;
             });
-            matchData.tier = match.tier
-            return matchData
+            if (typeof matchData === 'object') {
+                matchData.tier = match.tier
+                return matchData
+            }
+            else {
+                return 
+            }    
     };
 }
 
