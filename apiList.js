@@ -95,7 +95,7 @@ class API {
             })
             .catch((error) => {
                 console.log(error.message);
-                return
+                return 
             });
             if (typeof matchList === 'object') {
                 const match = matchList.map((data) => {
@@ -107,7 +107,7 @@ class API {
                 return match;
             }
             else {
-                return;
+                return 
             }
     };
 
@@ -126,8 +126,14 @@ class API {
                 console.log(error.message);
                 return error.message;
             });
-            matchData.tier = match.tier
-            return matchData
+            if (typeof matchData === 'object') {
+                matchData.tier = match.tier
+                return matchData
+            }
+            else {
+                return 
+            }    
+
     };
 }
 
