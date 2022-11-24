@@ -131,7 +131,7 @@ class API {
                 return matchData
             }
             else {
-                return 
+                return matchData
             }    
     };
 }
