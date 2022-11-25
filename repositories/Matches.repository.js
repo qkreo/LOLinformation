@@ -1,34 +1,58 @@
-const Endpoint = require('leaguejs/lib/Endpoint');
 const { summoners, MatchData, MatchList, Rating } = require('../models');
 const { Op } = require('sequelize')
+
+//models.sequelize.query() 직접 쿼리문 실행시
+// findOrCreate()
+// query =  `(SELECT
+//     find.championName,
+//     find.itemList,
+//     find.win,
+//     md.championName,
+//     md.itemList,
+//     md.win 
+//     FROM MatchData md 
+// INNER JOIN(SELECT matchId,
+//                 championName,
+//                 individualPosition,
+//                 itemList,
+//                 win
+//             from MatchData md 
+//             WHERE championId = ${findChamp}) 
+// as find
+// on find.matchId = md.matchId
+// where md.individualPosition = find.individualPosition and md.championId = ${enemyChamp} 
+// and md.championId != ${findChamp})`
 
 class MatchesRepository {
     // findUserList = async () => {
     //     return await summoners.find({tier:"DIAMOND"})
     // }
 
-    findMatchById = async (matchId) => {
-        return await MatchData.findOne({ where: { matchId } });
-    };
 
     findMatchList = async (matchId) => {
         return await MatchList.findOne({ where: { matchId } });
     };
 
+        
+    saveMatchList = async (matchId) => {
+
+        return await MatchList.create(matchId);
+    };
+
+    deleteMatchList = async (matchId) => {
+        await MatchList.destroy({where:{matchId}})
+    }
+
     findMatch = async (tier) => {
         return await MatchList.findAll({
             where: {tier},
-            attributes: ['matchId'],
+            attributes: ['matchId','tier'],
+            order: [["createdAt", "DESC"]]
         });
     };
 
-    saveMatchList = async (matchId) => {
-        try {
-            await MatchList.create(matchId);
-        } catch (err) {
-            return
-        }
-        
+    findMatchById = async (matchId) => {
+        return await MatchData.findOne({ where: { matchId } });
     };
 
     saveMatchData = async (matchData) => {
@@ -47,6 +71,7 @@ class MatchesRepository {
         const matchDataByChampion = await MatchList.findAll({
             where: { tier },
             attributes: ['matchId'],
+            order: [["createdAt", "DESC"]],
             include: {
                 model: MatchData,
                 where: { championId },

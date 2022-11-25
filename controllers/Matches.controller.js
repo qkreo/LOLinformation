@@ -4,20 +4,19 @@ class MatchesController {
     matchesService = new MatchesService();
 
     getMatchData = async (req, res, next) => {
-        const { league, division, tier, page } = req.query;
+        const { division, tier, page } = req.query;
         try {
-            if (league) {
-                const summoner = await this.matchesService.getLeagueList(
-                    league
-                );
-
-                return res.status(200).send(summoner);
-            } else {
-                const summoner = await this.matchesService.gettierList(
+            if (division && tier && page) {
+                
+                const summoner = await this.matchesService.getTierList(
                     division,
                     tier.toUpperCase(),
                     page
                 );
+                return res.status(200).send(summoner);
+            } else {
+                
+                const summoner = await this.matchesService.getLeagueList();
 
                 return res.status(200).send(summoner);
             }
@@ -28,8 +27,10 @@ class MatchesController {
 
     save = async (req, res, next) => {
         try {
-            const {tier} = req.params
-            const list = await this.matchesService.saveMatchData(tier.toUpperCase());
+            const { tier } = req.params;
+            const list = await this.matchesService.saveMatchData(
+                tier.toUpperCase()
+            );
             return res.status(200).send(list);
         } catch (err) {
             return next(err);
@@ -38,7 +39,6 @@ class MatchesController {
 
     getChampion = async (req, res, next) => {
         const { championId } = req.params;
-
         try {
             const champion = await this.matchesService.getChampion(championId);
 
