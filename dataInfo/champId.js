@@ -1,4 +1,4 @@
-data =[{"id":266,"engName":"Aatrox"},
+const championData =[{"id":266,"engName":"Aatrox"},
 {"id":103,"engName":"Ahri"},
 {"id":84,"engName":"Akali"},
 {"id":166,"engName":"Akshan"},
@@ -118,6 +118,7 @@ data =[{"id":266,"engName":"Aatrox"},
 {"id":15,"engName":"Sivir"},
 {"id":72,"engName":"Skarner"},
 {"id":37,"engName":"Sona"},
+{"id":16,"engName":"Soraka"},
 {"id":50,"engName":"Swain"},
 {"id":517,"engName":"Sylas"},
 {"id":134,"engName":"Syndra"},
@@ -159,3 +160,5 @@ data =[{"id":266,"engName":"Aatrox"},
 {"id":26,"engName":"Zilean"},
 {"id":142,"engName":"Zoe"},
 {"id":143,"engName":"Zyra"}]
+
+module.exports = championData

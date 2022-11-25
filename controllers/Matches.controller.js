@@ -48,6 +48,15 @@ class MatchesController {
         }
     };
 
+    saveRating = async (req, res, next) => {
+
+        try {
+            await this.matchesService.saveRating();
+        } catch (err) {
+            return next(err);
+        }
+    }
+
     getWinRatingByChamp = async (req, res, next) => {
         const { championId } = req.params;
 

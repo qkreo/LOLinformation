@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const MatchesRepository = require('../repositories/Matches.repository');
+const championData = require('../dataInfo/champId.js')
 
 const API = require('../apiList');
 
@@ -86,7 +87,7 @@ class MatchesService {
 
     saveMatchData = async (tier) => {
         try {
-            let i = 7439;
+            let i = 16492;
             const matchList = await this.matchesRepository.findMatch(tier);
             console.log(matchList.length, '매치리스트');
             const saveMatchInterval = setInterval(async () => {
@@ -137,8 +138,9 @@ class MatchesService {
         }
     };
 
-    getChampion = async (championId) => {
-        const tier = [
+    saveRating = async () => {
+        
+        const tierList = [
             'CHALLENGER',
             'GRANDMASTER',
             'MASTER',
@@ -161,69 +163,147 @@ class MatchesService {
             '6673', '6675', '6676', '6691', '6692', '6693', '6694', '6695', '6696', '8001', '8020',
         ];
 
-        let winRateByItemtoArray = [];
-        
-        for (let j = 0; j < tier.length; j++) {
-            const champion = await this.matchesRepository.getChampionById(
-                championId, tier[j]
-            );
+
+        // const tierData = await Promise.all(tierList.map(async (tier) => {
+
+        //     return (await this.matchesRepository.getMatchByTier(
+        //         tier
+        //     ));
             
+        // }))
 
-            if (!champion) {
-                throw new Error('해당 챔피언이 존재하지 않습니다');
-            } else {
-                const chapionOfItem = champion.map((champ) => {
+        // console.log(tierData)
 
-                    let result = champ.dataValues.MatchData[0].dataValues.itemList.split(',')
+        // tierData.forEach((match) => {
+            
+        // })
+        
+        
+        let i = 0;
+        // championData.map(async (champ) => {
+        //     console.log(`${champ.id}번 챔피언 승률계산중`)
 
-                    result.push(champ.dataValues.MatchData[0].dataValues.win)
-
-                    return result;
-                });
-
-                // console.log(chapionOfItem)
-
-                for (let i = 0; i < itemList.length; i++) {
-                    let winCount = 0;
-                    let pickCount = 0;
-                    
-                    chapionOfItem.map((data) => {
+        //     await Promise.all(tierList.map(async (tier) => {
+                
+        //         const champion = await this.matchesRepository.getChampionById(
+        //             champ.id, tier
+        //         );
                         
-                        if (data.indexOf(itemList[i]) === -1) {
-                            return;
-                        } else if (data[6] === '0') {
-                            pickCount = pickCount + 1;
-
-                            return;
-                        } else {
-                            pickCount = pickCount + 1;
-                            winCount = winCount + 1;
-                        }
-                    });
-
-                    const winRateByItem = {
-                        tier: tier[j],
-                        item: itemList[i],
-                        total: chapionOfItem.length,
-                        pick: (
-                            (pickCount / chapionOfItem.length) *
-                            100
-                        ).toFixed(2),
-                        win: ((winCount / pickCount) * 100).toFixed(2),
-                    };
-
-
-                    if (winRateByItem.win !== 'NaN' && winRateByItem.pick > 2) {
-                        winRateByItemtoArray.push(winRateByItem);
-                    }
-                }
-
-                winRateByItemtoArray.sort((a, b) => b.pick - a.pick);
+        //         await Promise.all(itemList.map(async (item) => {
+        //             let winCount = 0;
+        //             let pickCount = 0;
+    
+        //             const chapionOfItem = await Promise.all(champion.map((champ) => {
+        
+        //                 let result = champ.dataValues.MatchData[0].dataValues.itemList.split(',')
+        
+        //                 result.push(champ.dataValues.MatchData[0].dataValues.win)
+            
+        //                 return result;
+        //             }));
+                            
+        //             await Promise.all(chapionOfItem.map((data) => {
+                                
+        //                 if (data.indexOf(item) === -1) {
+        //                     return;
+        //                 } else if (data[6] === '0') {
+        //                     pickCount = pickCount + 1;
+        //                     return;
+        //                 } else {
+        //                     pickCount = pickCount + 1;
+        //                     winCount = winCount + 1;
+        //                 }
+        //             }));
+                        
+        //                 const winRateByItem = {
+        //                     championId: champ.id,
+        //                     tier: tier,
+        //                     itemId: item,
+        //                     totalMatch: chapionOfItem.length,
+        //                     pickRate: ((pickCount / chapionOfItem.length) *100).toFixed(2),
+        //                     winRate: ((winCount / pickCount) * 100).toFixed(2),
+        //                 };
+                            
+        //                 if (winRateByItem.winRate !== 'NaN' && winRateByItem.pickRate > 2) {
+        //                     await this.matchesRepository.saveRating(winRateByItem);
+        //                 }
+        //             }))
+        //         }))
+        // })
+        
+        const RatingInterval = setInterval( async () => {
+            
+            if(i === championData.length) {
+                clearInterval(RatingInterval);
+                console.log(`승률 데이터 저장 완료`)
+            } else {
+                
+                console.log(`${championData[i].engName} 승률계산중`)
+                
+                await Promise.all(tierList.map(async (tier) => {
+                    
+                    const champion = await this.matchesRepository.getChampionById(
+                        championData[i].id, tier
+                    );
+                        
+                    itemList.map(async (item) => {
+                        let winCount = 0;
+                        let pickCount = 0;
+    
+                        const chapionOfItem = champion.map((champ) => {
+        
+                            let result = champ.dataValues.MatchData[0].dataValues.itemList.split(',')
+            
+                            result.push(champ.dataValues.MatchData[0].dataValues.win)
+            
+                            return result;
+                        });
+                            
+                        chapionOfItem.map((data) => {
+                                
+                            if (data.indexOf(item) === -1) {
+                                return;
+                            } else if (data[6] === '0') {
+                                pickCount = pickCount + 1;
+                                return;
+                            } else {
+                                pickCount = pickCount + 1;
+                                winCount = winCount + 1;
+                            }
+                        });
+                            
+                            const winRateByItem = {
+                                championId: championData[i].id,
+                                tier: tier,
+                                itemId: item,
+                                totalMatch: chapionOfItem.length,
+                                pickRate: (
+                                    (pickCount / chapionOfItem.length) *
+                                    100
+                                ).toFixed(2),
+                                winRate: ((winCount / pickCount) * 100).toFixed(2),
+                            };
+                            
+                            if (winRateByItem.winRate !== 'NaN' && winRateByItem.pickRate > 2) {
+                                await this.matchesRepository.saveRating(winRateByItem)
+                            }
+                        })
+                    
+                }))
+                i++;
             }
-        }
-        // console.log(winRateByItemtoArray)
-        return winRateByItemtoArray;
+            
+           
+        }, 60000)
+        
+        
     };
+
+    getChampion = async (championId) => {
+        const champion = await this.matchesRepository.getChampion(championId)
+
+        return champion;
+    }
 
     // getWinRatingByChamp = async (championId) => {
     //     const champion = await this.matchesRepository.getChampionByIdtest(

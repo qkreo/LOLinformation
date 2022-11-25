@@ -1,4 +1,6 @@
-const { summoners, MatchData, MatchList } = require('../models');
+const Endpoint = require('leaguejs/lib/Endpoint');
+const { summoners, MatchData, MatchList, Rating } = require('../models');
+const { Op } = require('sequelize')
 
 class MatchesRepository {
     // findUserList = async () => {
@@ -33,19 +35,66 @@ class MatchesRepository {
         await MatchData.create(matchData);
     };
 
+    getMatchByTier = async (tier) => {
+        const match = await MatchList.findAll({where:{tier},attributes: ['matchId']})
+
+        return match;
+    }
+
     getChampionById = async (championId, tier) => {
+
+
         const matchDataByChampion = await MatchList.findAll({
             where: { tier },
             attributes: ['matchId'],
             include: {
                 model: MatchData,
                 where: { championId },
-                attributes: ['championId', 'championName', 'itemList', 'win'],
+                attributes: ['championId', 'itemList', 'win'],
             },
         });
 
         return matchDataByChampion;
     };
+
+    saveRating = async (winRateByItem) => {
+
+
+        const existData = await Rating.findOne({where: {
+            championId: winRateByItem.championId, 
+            itemId: winRateByItem.itemId,
+            tier: winRateByItem.tier,
+        }})
+
+
+        if(!existData) {
+            await Rating.create(winRateByItem);
+        } else if (winRateByItem.totalMatch > existData.dataValues.totalMatch) {
+            await Rating.update(winRateByItem, {where: {
+                championId: winRateByItem.championId, 
+                itemId: winRateByItem.itemId,
+                tier: winRateByItem.tier,
+            }});
+        } 
+    }
+
+    getChampion = async (championId) => {
+        const result = await Rating.findAll({where: {
+            championId: championId,
+            pickRate: {[Op.gte] : 2}
+        }, 
+        attributes:[
+            "championId",
+            "tier",
+            "itemId",
+            "totalMatch",
+            "pickRate",
+            "winRate"
+        ],
+        order:[['pickRate', 'DESC']]})
+
+        return result;
+    }
 
     // getChampionByIdtest = async (championId) => {
 
