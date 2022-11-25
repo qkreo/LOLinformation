@@ -1,32 +1,11 @@
-const { summoners, MatchData, MatchList } = require('../models');
+const { sequelize,summoners, MatchData, MatchList } = require('../models');
 
-//models.sequelize.query() 직접 쿼리문 실행시
-// findOrCreate()
-// query =  `(SELECT
-//     find.championName,
-//     find.itemList,
-//     find.win,
-//     md.championName,
-//     md.itemList,
-//     md.win 
-//     FROM MatchData md 
-// INNER JOIN(SELECT matchId,
-//                 championName,
-//                 individualPosition,
-//                 itemList,
-//                 win
-//             from MatchData md 
-//             WHERE championId = ${findChamp}) 
-// as find
-// on find.matchId = md.matchId
-// where md.individualPosition = find.individualPosition and md.championId = ${enemyChamp} 
-// and md.championId != ${findChamp})`
+
 
 class MatchesRepository {
     // findUserList = async () => {
     //     return await summoners.find({tier:"DIAMOND"})
     // }
-
 
     findMatchList = async (matchId) => {
         return await MatchList.findOne({ where: { matchId } });
@@ -58,59 +37,58 @@ class MatchesRepository {
         await MatchData.create(matchData);
     };
 
-
-
     getChampionById = async (championId, tier) => {
-        const matchDataByChampion = await MatchList.findAll({
-            where: { tier },
-            attributes: ['matchId'],
-            order: [["createdAt", "DESC"]],
-            include: {
-                model: MatchData,
-                where: { championId },
-                attributes: ['championId', 'championName', 'itemList', 'win'],
-                order: [["createdAt", "DESC"]]
-            },
-        });
-
-        return matchDataByChampion;
+        const [result, metadata] = await sequelize.query(`
+                    SELECT 
+                    matchTier,
+                    championId,
+                    championTransform,
+                    itemList,
+                    win 
+                    FROM MatchData md 
+                    WHERE championId = ${championId}
+                    `)
+        // const matchDataByChampion = await MatchList.findAll({
+        //     where: { tier },
+        //     attributes: ['matchId'],
+        //     order: [["createdAt", "DESC"]],
+        //     include: {
+        //         model: MatchData,
+        //         where: { championId },
+        //         attributes: ['championId', 'championName', 'itemList', 'win'],
+        //         order: [["createdAt", "DESC"]]
+        //     },
+        // });
+        console.log(result)
+        return result;
     };
 
-    // getChampionByIdtest = async (championId) => {
 
-    //     const champion = await Challenger.find({ championId: championId });
+    getEnemyById = async (myChampionId, enemyChampionId) => {
 
-    //     return champion;
-
-    // }
-
-    getEnemyById = async (championId, matchData) => {
-        let enemy = [];
-
-        // for (let i = 0; i < matchData.length; i++) {
-
-        const result = await Challenger.find(
-            {
-                matchData,
-                // championId: {$ne : championId },
-                // matchId: ,
-                // individualPosition: matchData[i].individualPosition
-            },
-            {
-                _id: 0,
-                championId: 1,
-                individualPosition: 1,
-                championName: 1,
-                win: 1,
-            }
-        );
-
-        console.log(result);
-        // enemy.push(result)
-
-        // }
-
-        // console.log(enemy)
+        const [result, metadata] = await sequelize.query(`SELECT
+            matchTier,
+            championId,
+            find.championName,
+            find.championTransform,
+            find.itemList,
+            find.win
+            FROM MatchData md 
+        INNER JOIN(SELECT matchId,
+                        championName,
+                        championTransform,
+                        teamPosition,
+                        itemList,
+                        win
+                    from MatchData md 
+                    WHERE championId = ${myChampionId}) 
+        as find
+        on find.matchId = md.matchId
+        where md.teamPosition = find.teamPosition
+        and md.championId = ${enemyChampionId} 
+        and md.championId != ${myChampionId} `)
+            console.log(result)
+    return result
     };
 }
 

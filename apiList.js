@@ -74,7 +74,7 @@ class API {
                 return summoner;
             }
             else {
-                return;
+                return summoner;
             }    
     
     };
@@ -95,7 +95,7 @@ class API {
             })
             .catch((error) => {
                 console.log(error.message);
-                return
+                return 
             });
             if (typeof matchList === 'object') {
                 const match = matchList.map((data) => {
@@ -107,7 +107,7 @@ class API {
                 return match;
             }
             else {
-                return;
+                return
             }
     };
 
