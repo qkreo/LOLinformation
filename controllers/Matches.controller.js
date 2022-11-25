@@ -25,7 +25,7 @@ class MatchesController {
         }
     };
 
-    save = async (req, res, next) => {
+    saveMatchData = async (req, res, next) => {
         try {
             const { tier } = req.params;
             const list = await this.matchesService.saveMatchData(
@@ -36,6 +36,18 @@ class MatchesController {
             return next(err);
         }
     };
+
+    getEnemyById = async (req, res, next) => {
+        try {
+        const { myChampionId, enemyChampionId } = req.query;
+        const rate = await this.matchesService.getEnemyById(myChampionId, enemyChampionId)
+        return res.status(200).send(rate);
+
+        } catch(err) {
+            return next(err);
+        }
+        
+    }
 
     getChampion = async (req, res, next) => {
         const { championId } = req.params;

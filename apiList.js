@@ -74,7 +74,7 @@ class API {
                 return summoner;
             }
             else {
-                return;
+                return summoner;
             }    
     
     };
@@ -107,7 +107,7 @@ class API {
                 return match;
             }
             else {
-                return 
+                return
             }
     };
 
@@ -131,7 +131,7 @@ class API {
                 return matchData
             }
             else {
-                return 
+                return matchData
             }    
 
     };
