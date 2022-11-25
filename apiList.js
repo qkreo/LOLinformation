@@ -133,7 +133,6 @@ class API {
             else {
                 return matchData
             }    
-
     };
 }
 
