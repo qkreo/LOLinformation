@@ -2,7 +2,35 @@ const { sequelize, Summoners, MatchData, MatchList, Rating } = require('../model
 
 const { Op } = require('sequelize');
 
-class MatchesRepository {
+class SaveDataRepository {
+
+    findMatchList = async (matchId) => {
+        return await MatchList.findOne({ logging: false,where: { matchId } });
+    };
+
+    saveMatchList = async (matchId) => {
+        return await MatchList.create(matchId);
+    };
+
+    deleteMatchList = async (matchId) => {
+        await MatchList.destroy({ where: { matchId } });
+    };
+
+    getMatchDataList = async (tier) => {
+        return await MatchList.findAll({
+            where: { tier },
+            attributes: ['matchId', 'tier'],
+            order: [['createdAt', 'DESC']],
+        });
+    };
+
+    findMatchById = async (matchId) => {
+        return await MatchData.findOne({logging: false, where: { matchId } });
+    };
+
+    saveMatchData = async (matchData) => {
+        await MatchData.create(matchData);
+    };
 
     getMatchByTier = async (tier) => {
         const match = await MatchList.findAll({
@@ -99,4 +127,4 @@ class MatchesRepository {
     };
 }
 
-module.exports = MatchesRepository;
+module.exports = SaveDataRepository;
