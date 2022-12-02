@@ -13,6 +13,7 @@ static associate(models) {
     MatchData.belongsTo(models.MatchList, {
         foreignKey: "matchId",
         targetKey: "matchId",
+        onDelete: 'CASCADE'
       });
       
 }
