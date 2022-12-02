@@ -13,12 +13,11 @@ const headers = {
 };
 
 class API {
-    getLeagueList = async (leagueName) => {
-        // 챌 그마 마스터 용 리그 서머너 리스트 불러오기
-        console.log(leagueName,"API호출")
+    getLeagueList = async (leagueTier) => {
+        console.log(leagueTier,"API호출")
         const summonerList = await axios({
             method: 'get',
-            url: `${leagueUrl}${leagueName}leagues/by-queue/RANKED_SOLO_5x5`,
+            url: `${leagueUrl}${leagueTier}leagues/by-queue/RANKED_SOLO_5x5`,
             headers: headers,
         })
             .then((response) => {
@@ -32,9 +31,10 @@ class API {
     };
 
     getTierList = async (division, tier, page) => {
+        console.log(tier + "티어" + page + "페이지 API호출")
         const tierList = await axios({
             method: 'get',
-            url: `${leagueUrl}v4/entries/RANKED_SOLO_5x5/${tier}/${division}?page=${page}`,
+            url: `${leagueUrl}entries/RANKED_SOLO_5x5/${tier}/${division}?page=${page}`,
             headers: headers,
         })
             .then((response) => {
@@ -44,7 +44,7 @@ class API {
                 console.log(error.message);
             });
         console.log(`${page}페이지의 소환사리스트`);
-        const result = {};
+      const result = {};  
         result.entries = tierList;
         result.tier = tierList[0].tier;
         return result;
@@ -52,6 +52,9 @@ class API {
 
 
     getSummoner = async (tierList, i) => {
+
+        if(tierList.entries.length < i ) i = 0
+
         const summoner = await axios({
             method: 'get',
             url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/${tierList.entries[i].summonerId}`,
@@ -61,8 +64,7 @@ class API {
                 return response.data;
             })
             .catch((error) => {
-                console.log(error.message);
-                return
+                return console.log(error.message);
             });
             if (typeof summoner === 'object') {
                 summoner.tier = tierList.tier;

@@ -13,12 +13,12 @@ class MatchesController {
                     tier.toUpperCase(),
                     page
                 );
-                return res.status(200).send(summoner);
+                return res.json({message:summoner});
             } else {
                 
                 const summoner = await this.matchesService.getLeagueList();
 
-                return res.status(200).send(summoner);
+                return res.json({message:summoner});
             }
         } catch (err) {
             return next(err);
