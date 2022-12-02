@@ -1,5 +1,6 @@
-const { summoners, MatchData, MatchList, Rating } = require('../models');
-const { Op } = require('sequelize')
+const { sequelize, Summoners, MatchData, MatchList, Rating } = require('../models');
+
+const { Op } = require('sequelize');
 
 //models.sequelize.query() 직접 쿼리문 실행시
 // findOrCreate()
@@ -9,18 +10,18 @@ const { Op } = require('sequelize')
 //     find.win,
 //     md.championName,
 //     md.itemList,
-//     md.win 
-//     FROM MatchData md 
+//     md.win
+//     FROM MatchData md
 // INNER JOIN(SELECT matchId,
 //                 championName,
 //                 individualPosition,
 //                 itemList,
 //                 win
-//             from MatchData md 
-//             WHERE championId = ${findChamp}) 
+//             from MatchData md
+//             WHERE championId = ${findChamp})
 // as find
 // on find.matchId = md.matchId
-// where md.individualPosition = find.individualPosition and md.championId = ${enemyChamp} 
+// where md.individualPosition = find.individualPosition and md.championId = ${enemyChamp}
 // and md.championId != ${findChamp})`
 
 class MatchesRepository {
@@ -28,26 +29,23 @@ class MatchesRepository {
     //     return await summoners.find({tier:"DIAMOND"})
     // }
 
-
     findMatchList = async (matchId) => {
         return await MatchList.findOne({ where: { matchId } });
     };
 
-        
     saveMatchList = async (matchId) => {
-
         return await MatchList.create(matchId);
     };
 
     deleteMatchList = async (matchId) => {
-        await MatchList.destroy({where:{matchId}})
-    }
+        await MatchList.destroy({ where: { matchId } });
+    };
 
     findMatch = async (tier) => {
         return await MatchList.findAll({
-            where: {tier},
-            attributes: ['matchId','tier'],
-            order: [["createdAt", "DESC"]]
+            where: { tier },
+            attributes: ['matchId', 'tier'],
+            order: [['createdAt', 'DESC']],
         });
     };
 
@@ -60,102 +58,100 @@ class MatchesRepository {
     };
 
     getMatchByTier = async (tier) => {
-        const match = await MatchList.findAll({where:{tier},attributes: ['matchId']})
-
-        return match;
-    }
-
-    getChampionById = async (championId, tier) => {
-
-
-        const matchDataByChampion = await MatchList.findAll({
+        const match = await MatchList.findAll({
             where: { tier },
             attributes: ['matchId'],
-            order: [["createdAt", "DESC"]],
-            include: {
-                model: MatchData,
-                where: { championId },
-                attributes: ['championId', 'itemList', 'win'],
-            },
         });
 
-        return matchDataByChampion;
+        return match;
     };
 
-    saveRating = async (winRateByItem) => {
+    getChampionById = async (championId, tier) => {
+        const [result, metadata] = await sequelize.query(`
+                    SELECT 
+                    matchTier,
+                    championId,
+                    championTransform,
+                    itemList,
+                    win 
+                    FROM MatchData md 
+                    WHERE 
+                    championId = ${championId}
+                    `);
 
+        if(result) {return result} else { return }
+    };
 
-        const existData = await Rating.findOne({where: {
-            championId: winRateByItem.championId, 
-            itemId: winRateByItem.itemId,
-            tier: winRateByItem.tier,
-        }})
+    saveRating = async (rateByitemResult) => {
+        rateByitemResult.forEach(async (data) => {
+            const existData = await Rating.findOne({
+                where: {
+                championId: data.championId,
+                itemId: data.itemId,
+                tier: data.tier,
+                },
+            });
 
-
-        if(!existData) {
-            await Rating.create(winRateByItem);
-        } else if (winRateByItem.totalMatch > existData.dataValues.totalMatch) {
-            await Rating.update(winRateByItem, {where: {
-                championId: winRateByItem.championId, 
-                itemId: winRateByItem.itemId,
-                tier: winRateByItem.tier,
-            }});
-        } 
-    }
+            if (!existData && data.pickRate > 2) {
+                await Rating.create(data);
+            } else if (data.pickRate > 2 && data.totalMatch > existData.dataValues.totalMatch) {
+                await Rating.update(data, {
+                    where: {
+                        championId: data.championId,
+                        itemId: data.itemId,
+                        tier: data.tier,
+                    },
+                });
+            }
+        }) 
+    };
 
     getChampion = async (championId) => {
-        const result = await Rating.findAll({where: {
-            championId: championId,
-            pickRate: {[Op.gte] : 2}
-        }, 
-        attributes:[
-            "championId",
-            "tier",
-            "itemId",
-            "totalMatch",
-            "pickRate",
-            "winRate"
-        ],
-        order:[['pickRate', 'DESC']]})
+        const result = await Rating.findAll({
+            where: {
+                championId: championId,
+                pickRate: { [Op.gte]: 2 },
+            },
+            attributes: [
+                'championId',
+                'tier',
+                'itemId',
+                'totalMatch',
+                'pickRate',
+                'winRate',
+            ],
+            order: [['pickRate', 'DESC']],
+        });
 
         return result;
-    }
+    };
 
     // getChampionByIdtest = async (championId) => {
 
-    //     const champion = await Challenger.find({ championId: championId });
-
-    //     return champion;
-
-    // }
-
-    getEnemyById = async (championId, matchData) => {
-        let enemy = [];
-
-        // for (let i = 0; i < matchData.length; i++) {
-
-        const result = await Challenger.find(
-            {
-                matchData,
-                // championId: {$ne : championId },
-                // matchId: ,
-                // individualPosition: matchData[i].individualPosition
-            },
-            {
-                _id: 0,
-                championId: 1,
-                individualPosition: 1,
-                championName: 1,
-                win: 1,
-            }
-        );
-
+    getEnemyById = async (myChampionId, enemyChampionId) => {
+        const [result, metadata] = await sequelize.query(`SELECT
+            matchTier,
+            championId,
+            find.championName,
+            find.championTransform,
+            find.itemList,
+            find.win
+            FROM MatchData md 
+        INNER JOIN(SELECT matchId,
+                        championName,
+                        championTransform,
+                        teamPosition,
+                        itemList,
+                        win
+                    from MatchData md 
+                    WHERE championId = ${myChampionId}) 
+        as find
+        on find.matchId = md.matchId
+        where md.teamPosition = find.teamPosition
+        and md.championId = ${enemyChampionId} 
+        and md.championId != ${myChampionId} `);
         console.log(result);
-        // enemy.push(result)
-
-        // }
-
-        // console.log(enemy)
+        return result;
     };
 }
 

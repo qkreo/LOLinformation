@@ -10,10 +10,11 @@ class MatchData extends Model {
  * The `models/index` file will call this method automatically.
  */
 static associate(models) {
-// Likes.belongsTo(models.PharmacyLikes, {
-//   foreignKey: "pharmacyNum",
-//   targetKey: "pharmacyNum",
-// });
+    MatchData.belongsTo(models.MatchList, {
+        foreignKey: "matchId",
+        targetKey: "matchId",
+      });
+      
 }
 }
 MatchData.init({

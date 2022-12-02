@@ -17,13 +17,13 @@ if (config.use_env_variable) {
         config.database,
         config.username,
         config.password,
-        {
-            host: config.host,
-            dialect: "mysql",
-            dialectOptions: {
-                connectTimeout: 60000
-              }
-        }
+        config,
+        {pool: {
+            max: 30,
+            min: 0,
+            acquire: 30000,
+            idle: 10000
+        }}
     );
 }
 
