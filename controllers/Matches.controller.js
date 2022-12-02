@@ -60,6 +60,17 @@ class MatchesController {
         }
     };
 
+    getItem = async (req, res, next) => {
+        const { itemId } = req.params;
+        try {
+            const item = await this.matchesService.getItem(itemId);
+
+            return res.status(200).send(item);
+        } catch (err) {
+            return next(err);
+        }
+    }; 
+
     saveRating = async (req, res, next) => {
 
         try {

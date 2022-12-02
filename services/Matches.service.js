@@ -392,6 +392,12 @@ class MatchesService {
 
         return itemByEnemyResult
     };
+
+    getItem = async(itemId) => {
+        const item = await this.matchesRepository.getItemById(itemId)
+
+        return item;
+    }
 }
 
 

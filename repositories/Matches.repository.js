@@ -123,6 +123,26 @@ class MatchesRepository {
         return result;
     };
 
+    getItemById = async (itemId) => {
+        const result = await Rating.findAll({
+            where: {
+                itemId: itemId,
+                pickRate: { [Op.gte]: 30 }
+            },
+            attributes: [
+                'championId',
+                'tier',
+                'itemId',
+                'totalMatch',
+                'pickRate',
+                'winRate',
+            ],
+            order: [['tier', 'DESC']]
+        })
+
+        return result;
+    }
+
     getEnemyById = async (myChampionId, enemyChampionId) => {
         const [result, metadata] = await sequelize.query(`SELECT
             matchTier,
