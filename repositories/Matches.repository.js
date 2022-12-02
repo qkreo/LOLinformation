@@ -25,12 +25,9 @@ const { Op } = require('sequelize');
 // and md.championId != ${findChamp})`
 
 class MatchesRepository {
-    // findUserList = async () => {
-    //     return await summoners.find({tier:"DIAMOND"})
-    // }
 
     findMatchList = async (matchId) => {
-        return await MatchList.findOne({ where: { matchId } });
+        return await MatchList.findOne({ logging: false,where: { matchId } });
     };
 
     saveMatchList = async (matchId) => {
@@ -41,7 +38,7 @@ class MatchesRepository {
         await MatchList.destroy({ where: { matchId } });
     };
 
-    findMatch = async (tier) => {
+    getMatchDataList = async (tier) => {
         return await MatchList.findAll({
             where: { tier },
             attributes: ['matchId', 'tier'],
@@ -50,7 +47,7 @@ class MatchesRepository {
     };
 
     findMatchById = async (matchId) => {
-        return await MatchData.findOne({ where: { matchId } });
+        return await MatchData.findOne({logging: false, where: { matchId } });
     };
 
     saveMatchData = async (matchData) => {
@@ -126,8 +123,6 @@ class MatchesRepository {
         return result;
     };
 
-    // getChampionByIdtest = async (championId) => {
-
     getEnemyById = async (myChampionId, enemyChampionId) => {
         const [result, metadata] = await sequelize.query(`SELECT
             matchTier,
@@ -150,7 +145,6 @@ class MatchesRepository {
         where md.teamPosition = find.teamPosition
         and md.championId = ${enemyChampionId} 
         and md.championId != ${myChampionId} `);
-        console.log(result);
         return result;
     };
 }

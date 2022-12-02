@@ -13,12 +13,12 @@ class MatchesController {
                     tier.toUpperCase(),
                     page
                 );
-                return res.status(200).send(summoner);
+                return res.json({message:summoner});
             } else {
                 
                 const summoner = await this.matchesService.getLeagueList();
 
-                return res.status(200).send(summoner);
+                return res.json({message:summoner});
             }
         } catch (err) {
             return next(err);
@@ -72,11 +72,11 @@ class MatchesController {
     }
 
     getWinRatingByChamp = async (req, res, next) => {
-        const { championId } = req.params;
+        const { myChampionId, enemyChampionId } = req.params;
 
         try {
             const winRating = await this.matchesService.getWinRatingByChamp(
-                championId
+                myChampionId, enemyChampionId
             );
 
             return res.status(200).send(winRating);

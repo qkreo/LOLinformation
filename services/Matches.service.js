@@ -15,35 +15,42 @@ class MatchesService {
 
     getLeagueList = async (leagueTier) => {
         if (leagueTier === undefined) leagueTier = 'challenger';
-        console.log('챌~마스터 티어 수집 시작');
+        console.log(leagueTier,'티어 수집 시작');
 
         const leagueSummonerList = await this.api.getLeagueList(leagueTier);
-
-        this.getSummoner(leagueSummonerList);
+        if (typeof leagueSummonerList === 'object') {
+            console.log("작동")
+            this.getSummoner(leagueSummonerList);
+        }
+        else {
+            console.log('API 호출실패로 대기');
+            this.getLeagueList(leagueTier)
+        }               
+        return "데이터 수집 시작"
     };
 
     getTierList = async (division, tier, page) => {
-        console.log(tier, '데이터수집 시작');
+        console.log(tier,page + ' 페이지 데이터수집 시작');
 
-        if (page === 6) {
+        if (page >= 3) {
             console.log(`=============${tier}List저장종료=============`);
 
             switch (tier) {
                 case 'DIAMOND':
-                    this.getTierList('I', 'PLATINUM', '0');
+                    this.getTierList('I', 'PLATINUM', '1');
                     break;
                 case 'PLATINUM':
-                    this.getTierList('I', 'GOLD', '0');
+                    this.getTierList('I', 'GOLD', '1');
                     break;
                 case 'GOLD':
-                    this.getTierList('I', 'SILVER', '0');
+                    this.getTierList('I', 'SILVER', '1');
                     break;
                 case 'SILVER':
-                    this.getTierList('I', 'BRONZE', '0');
+                    this.getTierList('I', 'BRONZE', '1');
                     break;
                 default:
                     console.log('============getTierList=========');
-                    this.saveMatchData('challenger');
+                    this.saveMatchData('CHALLENGER');
                     break;
             }
         } else {
@@ -55,14 +62,14 @@ class MatchesService {
 
             this.getSummoner(leagueSummonerList, page);
         }
+        return "데이터 수집 시작"
     };
 
     getSummoner = async (leagueSummonerList, page) => {
         let i = 0;
-        console.log(leagueSummonerList.entries.length);
-        if (leagueSummonerList.tier === Master)
-            leagueSummonerList.entries.length = 1000;
-        console.log(leagueSummonerList.entries.length);
+        console.log(leagueSummonerList.entries.length,"명의 소환사");
+        if(leagueSummonerList.tier === "MASTER") leagueSummonerList.entries = leagueSummonerList.entries.slice(0,300) // 7000명 너무많아서 일단 700명으로 제한
+        if(leagueSummonerList.entries.length < i ) i = 0 
         const saveMatchInterval = setInterval(async () => {
             if (i === leagueSummonerList.entries.length) {
                 console.log('=============저장종료=============');
@@ -75,40 +82,44 @@ class MatchesService {
                         this.getLeagueList('master');
                         break;
                     case 'MASTER':
-                        this.getTierList('I', 'DIAMOND', '0');
+                        this.getTierList('I', 'DIAMOND', '1');
                         break;
                     case 'DIAMOND':
-                        page = page + 2;
+                        // page = page + 2 실행시 문자열 + 2가 돼서 기대값은 1 + 2 = 3 이었지만 결과값은 12였음
+                        page = Number(page) + 2;
                         this.getTierList('I', 'DIAMOND', page);
                         break;
                     case 'PLATINUM':
-                        page = page + 2;
+                        page = Number(page) + 2;
                         this.getTierList('I', 'PLATINUM', page);
                         break;
                     case 'GOLD':
-                        page = page + 2;
+                        page = Number(page) + 2;
                         this.getTierList('I', 'GOLD', page);
                         break;
                     case 'SILVER':
-                        page = page + 2;
+                        page = Number(page) + 2;
                         this.getTierList('I', 'SILVER', page);
                         break;
                     case 'BRONZE':
-                        page = page + 2;
+                        page = Number(page) + 2;
                         this.getTierList('I', 'BRONZE', page);
                         break;
-                    // default : this.saveMatchData('challenger');
-                    // break;
                 }
             } else {
+
                 const summoner = await this.api.getSummoner(
                     leagueSummonerList,
                     i
                 );
-                if (typeof summoner === 'object') this.getMatchList(summoner);
-                else return console.log('API 호출실패로 대기');
-
-                i++;
+                if (typeof summoner === 'object') {
+                    i++;
+                    this.getMatchList(summoner);
+                    // i++;  밑에 겟 매치리스트는 호출했으나 i++가 안되고 계속 같은소환사를 호출했음 잘되다가 ?? 왜?? 
+                }
+                else {
+                    return console.log('API 호출실패로 대기');
+                }               
             }
         }, 1300);
     };
@@ -121,8 +132,8 @@ class MatchesService {
                 const findMatch = await this.matchesRepository.findMatchList(
                     match.matchId
                 );
-                if (!findMatch) this.matchesRepository.saveMatchList(match);
-                else console.log(`이미 저장된 매치 ${match.matchId} 입니다`);
+                if (!findMatch) return this.matchesRepository.saveMatchList(match);
+                else return 
             });
         } else {
             return console.log('API 호출실패로 대기');
@@ -130,27 +141,16 @@ class MatchesService {
     };
 
     saveMatchData = async (tier) => {
-        if (tier === undefined) tier = 'CHALLENGER';
+        if (tier === undefined) tier = 'master';
         let i = 0;
-        const matchList = await this.matchesRepository.findMatch(tier);
+        const matchList = await this.matchesRepository.getMatchDataList(tier);
         console.log(matchList.length, '매치리스트');
 
         const saveMatchInterval = setInterval(async () => {
             if (i === matchList.length) {
                 console.log('=============매치저장종료=============');
                 clearInterval(saveMatchInterval);
-
-                switch (tier) {
-                    case 'CHALLENGER':
-                        this.saveMatchData('GRANDMASTER');
-                        break;
-                    case 'GRANDMASTER':
-                        this.saveMatchData('MASTER');
-                        break;
-                    default:
-                        console.log('매치 저장 종료 ');
-                }
-            } else {
+            } else {           // findOrCreate
                 const findMatchId = await this.matchesRepository.findMatchById(
                     matchList[i].matchId
                 );
@@ -160,25 +160,16 @@ class MatchesService {
                         matchList[i],
                         i
                     );
-                    switch (matchData) {
-                        case 'Request failed with status code 404':
-                            await this.matchesRepository.deleteMatchList(
-                                matchList[i].matchId
-                            );
-                            console.log('Data not found');
+                    switch (typeof matchData) {
+                        case "string" :
+                            if(matchData === 'Request failed with status code 404' ) {
+                                await this.matchesRepository.deleteMatchList(
+                                    matchList[i].matchId
+                                );
+                                console.log(matchData);    
+                            }
+                            i++
                             break;
-                        case 'Request failed with status code 429':
-                            console.log('Rate limit exceeded');
-                            return;
-                        case 'Request failed with status code 500':
-                            console.log('Internal server error');
-                            return;
-                        case 'connect ETIMEDOUT 103.240.225.13:443':
-                            console.log('API 호출실패로 대기');
-                            return;
-                        case 'Request failed with status code 503':
-                            console.log('Service unavailable');
-                            return;
                         default:
                             matchData.info.participants.map((data) => {
                                 const itemList = [
@@ -216,23 +207,36 @@ class MatchesService {
                             break;
                     }
                 } else {
-                    return;
-                    // console.log(
-                    //     `${tier}티어 ${i}번쨰와 동일한 매치데이터 존재함`
-                    // );
-                    // console.log(`${tier} 매치데이터 업데이트를 완료하였습니다`);
-                    // clearInterval(saveMatchInterval);
+                    console.log(`${tier}티어 ${i}번쨰와 동일한 매치데이터 존재함`);                         
+                    console.log(`${tier} 매치데이터 업데이트를 완료하였습니다`);
+                    clearInterval(saveMatchInterval);       
+                    switch (tier) {
+                        case 'CHALLENGER':
+                            this.saveMatchData('GRANDMASTER');
+                            break;
+                        case 'GRANDMASTER':
+                            this.saveMatchData('MASTER');
+                            break;
+                        case 'MASTER':
+                            this.saveMatchData('DIAMOND');
+                            break;
+                        case 'DIAMOND':
+                            this.saveMatchData('PLATINUM');
+                            break;
+                        case 'PLATINUM':
+                            this.saveMatchData('GOLD');
+                            break;
+                        case 'GOLD':
+                            this.saveMatchData('SILVER');
+                            break;
+                        case 'SILVER':
+                            this.saveMatchData('BRONZE');
+                            break;
+                        default:
+                            console.log('매치 저장 종료');
+                            this.getLeagueList("challenger")
 
-                    // switch (tier) {
-                    //     case 'CHALLENGER':
-                    //         this.saveMatchData('GRANDMASTER');
-                    //         break;
-                    //     case 'GRANDMASTER':
-                    //         this.saveMatchData('MASTER');
-                    //         break;
-                    //     default:
-                    //         console.log('매치 저장 종료 ');
-                    // }
+                    }
                 }
                 i++;
             }
@@ -353,32 +357,42 @@ class MatchesService {
         return champion;
     };
 
-    // getWinRatingByChamp = async (championId) => {
-    //     const champion = await this.matchesRepository.getChampionByIdtest(
-    //         championId
-    //     );
+    getWinRatingByChamp = async (myChampionId, enemyChampionId) => {
+        const matchData = await this.matchesRepository.getEnemyById(
+            myChampionId, enemyChampionId
+        );
 
-    //     if (!champion) {
-    //         throw new Error('해당 챔피언이 존재하지 않습니다');
-    //     } else {
-    //         let matchData = [];
+        const itemByEnemy= coreItemList.map((item) => {
+            let pickCount = 0;
+            let winCount = 0;
 
-    //         champion.map((data) => {
-    //             matchData.push({
-    //                 matchId: data.matchId,
-    //                 individualPosition: data.individualPosition,
-    //             });
-    //         });
+            matchData.forEach((data) => {
+                if(data.itemList.search(item) === -1){ } 
+                else if (data.win === '0') { pickCount++;}
+                else {pickCount++; winCount++;}
+            })
 
-    //         // console.log(matchData)
+            return {
+                myChampionId: myChampionId,
+                enemyChampionId: enemyChampionId,
+                itemId: item,
+                pickRate: ((pickCount/matchData.length)*100).toFixed(2),
+                winRate: ((winCount/pickCount)*100).toFixed(2)
+            }
+        })
+        const itemByEnemyResult = [];
 
-    //         const enemy = await this.matchesRepository.getEnemyById(
-    //             championId,
-    //             matchData
-    //         );
-    //     }
-    // };
-    }
+        itemByEnemy.forEach((data)=> {
+            if(data.pickRate > 2 ) {
+                itemByEnemyResult.push(data)
+            }
+        })
+        
+        itemByEnemyResult.sort((a, b) => b.pickRate - a.pickRate)
+
+        return itemByEnemyResult
+    };
+}
 
 
 module.exports = MatchesService;
