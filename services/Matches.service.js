@@ -2,6 +2,9 @@ require('dotenv').config();
 
 const MatchesRepository = require('../repositories/Matches.repository');
 
+const championData = require('../dataInfo/champId.js');
+const coreItemList = require('../dataInfo/item.js')
+
 const API = require('../apiList');
 
 class MatchesService {
@@ -241,126 +244,155 @@ class MatchesService {
     };
 
     getEnemyById = async (myChampionId, enemyChampionId) => {
-        const rate = await this.matchesRepository.getEnemyById(myChampionId, enemyChampionId)
-        return rate
+        const rate = await this.matchesRepository.getEnemyById(
+            myChampionId,
+            enemyChampionId
+        );
+        return rate;
+    };
+
+    saveRating = () => {
+        let i = 0;
+        const ratingInterval = setInterval( async ()=>{
+            if(i === championData.length) {
+                console.log('챔피언 승률 저장 종료')
+                clearInterval(ratingInterval);
+
+            } else {
+
+                const matchDataList = await this.matchesRepository.getChampionById(
+                    championData[i].id
+                );
+                
+                let challenger = [];
+                let grandmaster = [];
+                let master = [];
+                let diamond = [];
+                let platinum = [];
+                let gold = [];
+                let silver = [];
+                let bronze = [];
+    
+                matchDataList.forEach((matchData) => {
+                    const championItem = matchData.itemList.split(',');
+    
+                    matchData.itemList = championItem; 
+    
+                    switch (matchData.matchTier) {
+                        case 'CHALLENGER':
+                            challenger.push(matchData)
+                            break;
+                        case 'GRANDMASTER':
+                            grandmaster.push(matchData);
+                            break;
+                
+                        case 'MASTER':
+                            master.push(matchData);
+                            break;
+                
+                        case 'DIAMOND':
+                            diamond.push(matchData);
+                            break;
+                
+                        case 'PLATINUM':
+                            platinum.push(matchData);
+                            break;
+                
+                        case 'GOLD':
+                            gold.push(matchData);
+                            break;
+                
+                        case 'SILVER':
+                            silver.push(matchData);
+                            break;
+                
+                        case 'BRONZE':
+                            bronze.push(matchData);
+                            break;
+                    }
+                });
+    
+                const tierList = [challenger, grandmaster, master, diamond, platinum, gold, silver, bronze]
+    
+                const rateByitemResult = await this.ratingByitem(tierList)
+    
+                await rateByitemResult.map((data) => {
+                    this.matchesRepository.saveRating(data)
+                })
+
+                i++;
+            }}, 60000)
+        };
+    
+        ratingByitem = async (tierList) => {
+            const rateResult = tierList.map((tier) => {
+                const calculateResult = coreItemList.map((item) => {
+                    let pickCount = 0;
+                    let winCount = 0;
+                    tier.forEach((data) => {
+                        if(data.itemList.indexOf(item) === -1) {
+                        } else if (data.win === '0') { pickCount++;}
+                        else {pickCount++; winCount++;}
+                    })
+        
+                    return {
+                        championId: tier[0].championId,
+                        tier: tier[0].matchTier,
+                        itemId: item,
+                        totalMatch: tier.length,
+                        pickRate: ((pickCount/tier.length)*100).toFixed(2),
+                        winRate: ((winCount/pickCount)*100).toFixed(2)
+                    }
+                });
+    
+                return calculateResult
+            })
+    
+            return rateResult
     }
 
     getChampion = async (championId) => {
+        const champion = await this.matchesRepository.getChampion(championId);
 
-        const itemList = [
-            '3001','3006','3009','3011','3020','3026','3031','3033','3036','3040',
-            '3042','3046','3047','3050','3053','3065','3071','3072','3074','3075',
-            '3078','3083','3085','3089','3091','3094','3095','3100','3102','3107',
-            '3109','3110','3111','3115','3116','3117','3119','3121','3124','3135',
-            '3139','3142','3143','3152','3153','3156','3157','3158','3165','3179',
-            '3181','3190','3193','3222','3504','3508','3742','3743','3814','3853',
-            '3857','3860','3864','4005','4401','4628','4629','4633','4636','4637',
-            '4638','4643','4644','4645','6035','6333','6609','6616','6630','6631',
-            '6632','6653','6655','6656','6662','6664','6671','6672','6673','6675',
-            '6676','6691','6692','6693','6694','6695','6696','8001','8020',
-        ];
-
-      
-        const tier = [
-            'CHALLENGER',
-            'GRANDMASTER',
-            'MASTER',
-            'DIAMOND',
-            'PLATINUM',
-            'GOLD',
-            'SILVER',
-            'BRONZE',
-        ];
-
-        let winRateByItemtoArray = [];
-
-        for (let j = 0; j < tier.length; j++) {
-            const champion = await this.matchesRepository.getChampionById(
-                championId,
-                tier[j]
-            );
-
-            if (!champion) {
-                throw new Error('해당 챔피언이 존재하지 않습니다');
-            } else {
-                const chapionOfItem = champion.map((champ) => {
-                    let result =
-                        champ.dataValues.MatchData[0].dataValues.itemList.split(
-                            ','
-                        );
-
-                    result.push(champ.dataValues.MatchData[0].dataValues.win);
-
-                    return result;
-                });
-
-                // console.log(chapionOfItem)
-
-                for (let i = 0; i < itemList.length; i++) {
-                    let winCount = 0;
-                    let pickCount = 0;
-
-                    chapionOfItem.map((data) => {
-                        if (data.indexOf(itemList[i]) === -1) {
-                            return;
-                        } else if (data[6] === '0') {
-                            pickCount = pickCount + 1;
-
-                            return;
-                        } else {
-                            pickCount = pickCount + 1;
-                            winCount = winCount + 1;
-                        }
-                    });
-
-                    const winRateByItem = {
-                        tier: tier[j],
-                        item: itemList[i],
-                        total: chapionOfItem.length,
-                        pick: (
-                            (pickCount / chapionOfItem.length) *
-                            100
-                        ).toFixed(2),
-                        win: ((winCount / pickCount) * 100).toFixed(2),
-                    };
-
-                    if (winRateByItem.win !== 'NaN' && winRateByItem.pick > 2) {
-                        winRateByItemtoArray.push(winRateByItem);
-                    }
-                }
-
-                winRateByItemtoArray.sort((a, b) => b.pick - a.pick);
-            }
-        }
-
-        return winRateByItemtoArray;
+        return champion;
     };
 
-    // getWinRatingByChamp = async (championId) => {
-    //     const champion = await this.matchesRepository.getChampionByIdtest(
-    //         championId
-    //     );
+    getWinRatingByChamp = async (myChampionId, enemyChampionId) => {
+        const matchData = await this.matchesRepository.getEnemyById(
+            myChampionId, enemyChampionId
+        );
 
-    //     if (!champion) {
-    //         throw new Error('해당 챔피언이 존재하지 않습니다');
-    //     } else {
-    //         let matchData = [];
+        const itemByEnemy= coreItemList.map((item) => {
+            let pickCount = 0;
+            let winCount = 0;
 
-    //         champion.map((data) => {
-    //             matchData.push({
-    //                 matchId: data.matchId,
-    //                 individualPosition: data.individualPosition,
-    //             });
-    //         });
+            matchData.forEach((data) => {
+                if(data.itemList.search(item) === -1){ } 
+                else if (data.win === '0') { pickCount++;}
+                else {pickCount++; winCount++;}
+            })
 
-    //         // console.log(matchData)
+            return {
+                myChampionId: myChampionId,
+                enemyChampionId: enemyChampionId,
+                itemId: item,
+                pickRate: ((pickCount/matchData.length)*100).toFixed(2),
+                winRate: ((winCount/pickCount)*100).toFixed(2)
+            }
+        })
+        const itemByEnemyResult = [];
 
-    //         const enemy = await this.matchesRepository.getEnemyById(
-    //             championId,
-    //             matchData
-    //         );
-    //     }
-    // };
+        itemByEnemy.forEach((data)=> {
+            if(data.pickRate > 2 ) {
+                itemByEnemyResult.push(data)
+            }
+        })
+        
+        itemByEnemyResult.sort((a, b) => b.pickRate - a.pickRate)
+
+        return itemByEnemyResult
+    };
 }
+
 
 module.exports = MatchesService;
