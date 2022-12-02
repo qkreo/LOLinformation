@@ -1,7 +1,17 @@
 const MatchesService = require('../services/Matches.service.js');
+const { sequelize, Summoners, MatchData, MatchList, Rating } = require('../models');
 
 class MatchesController {
     matchesService = new MatchesService();
+
+    findMatchData = async (req,res,next) => {
+        const {championId} = req.params;
+
+        const result = await MatchData.findAll({ logging: false,where: { championId } });
+
+        res.status(200).send(result);
+
+       };
 
     getEnemyById = async (req, res, next) => {
         try {

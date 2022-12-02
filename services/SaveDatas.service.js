@@ -17,18 +17,17 @@ class SaveDataService {
 
         const leagueSummonerList = await this.api.getLeagueList(leagueTier);
         if (typeof leagueSummonerList === 'object') {
-            console.log("작동")
             this.getSummoner(leagueSummonerList);
         }
         else {
-            console.log('API 호출실패로 대기');
-            this.getLeagueList(leagueTier)
+            console.log(leagueSummonerList);
+            this.getLeagueList('challenger')
         }               
         return "데이터 수집 시작"
     };
 
     getTierList = async (division, tier, page) => {
-        console.log(tier,page + ' 페이지 데이터수집 시작');
+        console.log(tier + ' 티어',page + ' 페이지 데이터수집 시작');
 
         if (page >= 3) {
             console.log(`=============${tier}List저장종료=============`);
@@ -47,7 +46,7 @@ class SaveDataService {
                     this.getTierList('I', 'BRONZE', '1');
                     break;
                 default:
-                    console.log('============getTierList=========');
+                    console.log('============매치데이터 저장 시작 =========');
                     this.saveMatchData('CHALLENGER');
                     break;
             }
@@ -187,7 +186,7 @@ class SaveDataService {
                                 const realDate = unixDate.substring(0, 10);
                                 const matchDate = new Date(realDate * 1000);
 
-                                this.matchesRepository.saveMatchData({
+                                this.saveDataRepository.saveMatchData({
                                     matchId: matchData.metadata.matchId,
                                     matchTier: matchData.tier,
                                     matchDate: matchDate,
@@ -204,8 +203,7 @@ class SaveDataService {
                             });
                             break;
                     }
-                } else {
-                    console.log(`${tier}티어 ${i}번쨰와 동일한 매치데이터 존재함`);                         
+                } else {                  
                     console.log(`${tier} 매치데이터 업데이트를 완료하였습니다`);
                     clearInterval(saveMatchInterval);       
                     switch (tier) {
@@ -231,8 +229,7 @@ class SaveDataService {
                             this.saveMatchData('BRONZE');
                             break;
                         default:
-                            console.log('매치 저장 종료');
-                            this.getLeagueList("challenger") // 처음으로 돌아가 데이터 수집
+                            this.saveRatings();
 
                     }
                 }
@@ -241,19 +238,20 @@ class SaveDataService {
         }, 1200);
     };
 
-    saveRating = () => {
-        let i = 0;
-        const ratingInterval = setInterval( async ()=>{
-            if(i === championData.length) {
-                console.log('챔피언 승률 저장 종료')
-                clearInterval(ratingInterval);
-
-            } else {
-
+    saveRatings = async () => {
+        console.log("레이팅 저장 시작")
+        for(let i = 0; i < championData.length; i++){
+            await this.saveRating(i)
+          }
+        console.log("레이팅 저장 완료")  
+  }
+  
+    saveRating = async (i) => {
+        console.log(championData[i].engName," 데이터를 불러옵니다")
                 const matchDataList = await this.saveDataRepository.getChampionById(
                     championData[i].id
                 );
-                
+
                 let challenger = [];
                 let grandmaster = [];
                 let master = [];
@@ -262,7 +260,6 @@ class SaveDataService {
                 let gold = [];
                 let silver = [];
                 let bronze = [];
-    
                 matchDataList.forEach((matchData) => {
                     const championItem = matchData.itemList.split(',');
     
@@ -305,42 +302,41 @@ class SaveDataService {
                 const tierList = [challenger, grandmaster, master, diamond, platinum, gold, silver, bronze]
     
                 const rateByitemResult = await this.ratingByitem(tierList)
-    
+
                 await rateByitemResult.map((data) => {
-                    this.matchesRepository.saveRating(data)
+                    this.saveDataRepository.saveRating(data)
                 })
 
-                i++;
-            }}, 60000)
+                console.log(championData[i].engName," 데이터 갱신 완료 ")
         };
     
-        ratingByitem = async (tierList) => {
-            const rateResult = tierList.map((tier) => {
-                const calculateResult = coreItemList.map((item) => {
-                    let pickCount = 0;
-                    let winCount = 0;
-                    tier.forEach((data) => {
-                        if(data.itemList.indexOf(item) === -1) {
-                        } else if (data.win === '0') { pickCount++;}
-                        else {pickCount++; winCount++;}
-                    })
         
-                    return {
-                        championId: tier[0].championId,
-                        tier: tier[0].matchTier,
-                        itemId: item,
-                        totalMatch: tier.length,
-                        pickRate: ((pickCount/tier.length)*100).toFixed(2),
-                        winRate: ((winCount/pickCount)*100).toFixed(2)
-                    }
-                });
+    ratingByitem = async (tierList) => {
+        const rateResult = tierList.map((tier) => {
+            const calculateResult = coreItemList.map((item) => {
+                let pickCount = 0;
+                let winCount = 0;
+                tier.forEach((data) => {
+                    if(data.itemList.indexOf(item) === -1) {
+                    } else if (data.win === '0') { pickCount++;}
+                    else {pickCount++; winCount++;}
+                })
     
-                return calculateResult
-            })
-    
-            return rateResult
-    }
+                return {
+                    championId: tier[0].championId,
+                    tier: tier[0].matchTier,
+                    itemId: item,
+                    totalMatch: tier.length,
+                    pickRate: ((pickCount/tier.length)*100).toFixed(2),
+                    winRate: ((winCount/pickCount)*100).toFixed(2)
+                }
+            });
 
+            return calculateResult
+        })
+
+        return rateResult
+    }
 }
 
 

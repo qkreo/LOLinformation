@@ -4,55 +4,6 @@ const { Op } = require('sequelize');
 
 class MatchesRepository {
 
-    getMatchByTier = async (tier) => {
-        const match = await MatchList.findAll({
-            where: { tier },
-            attributes: ['matchId'],
-        });
-
-        return match;
-    };
-
-    getChampionById = async (championId, tier) => {
-        const [result, metadata] = await sequelize.query(`
-                    SELECT 
-                    matchTier,
-                    championId,
-                    championTransform,
-                    itemList,
-                    win 
-                    FROM MatchData md 
-                    WHERE 
-                    championId = ${championId}
-                    `);
-
-        if(result) {return result} else { return }
-    };
-
-    saveRating = async (rateByitemResult) => {
-        rateByitemResult.forEach(async (data) => {
-            const existData = await Rating.findOne({
-                where: {
-                championId: data.championId,
-                itemId: data.itemId,
-                tier: data.tier,
-                },
-            });
-
-            if (!existData && data.pickRate > 2) {
-                await Rating.create(data);
-            } else if (data.pickRate > 2 && data.totalMatch > existData.dataValues.totalMatch) {
-                await Rating.update(data, {
-                    where: {
-                        championId: data.championId,
-                        itemId: data.itemId,
-                        tier: data.tier,
-                    },
-                });
-            }
-        }) 
-    };
-
     getChampion = async (championId) => {
         const result = await Rating.findAll({
             where: {

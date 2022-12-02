@@ -1,4 +1,4 @@
-const SaveDataService = require('../services/SaveData.service.js');
+const SaveDataService = require('../services/SaveDatas.service.js');
 
 class SaveDataController {
     saveDataService = new SaveDataService();
@@ -40,7 +40,7 @@ class SaveDataController {
     saveRating = async (req, res, next) => {
 
         try {
-            const result = await this.saveDataService.saveRating();
+            const result = await this.saveDataService.saveRatings();
 
             res.status(200).send(result)
         } catch (err) {
