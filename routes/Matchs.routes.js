@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const MatchesController = require ('../controllers/Matches.controller');
 const matchesController = new MatchesController()
-
-router.get('/', matchesController.getMatchData) // 매치 리스트 저장
-router.put('/save/rating', matchesController.saveRating)
+// /match/
 router.get('/enemy', matchesController.getEnemyById)
 router.get('/:championId', matchesController.getChampion)
-router.post('/:myChampionId/:enemyChampionId', matchesController.getWinRatingByChamp)
-router.post('/save/:tier', matchesController.saveMatchData) // 단일 매치 저장 
+router.get('/:myChampionId/:enemyChampionId', matchesController.getWinRatingByChamp)
+
+
+
 
 module.exports = router;
