@@ -161,4 +161,5 @@ const championData =[{"id":266,"engName":"Aatrox"},
 {"id":142,"engName":"Zoe"},
 {"id":143,"engName":"Zyra"}]
 
+
 module.exports = championData
