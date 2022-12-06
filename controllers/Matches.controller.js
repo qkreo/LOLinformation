@@ -36,6 +36,40 @@ class MatchesController {
         }
     };
 
+    getItem = async (req, res, next) => {
+        const { itemId } = req.params;
+        try {
+            const item = await this.matchesService.getItem(itemId);
+
+            return res.status(200).json(item);
+        } catch (err) {
+            return next(err);
+        }
+    };
+
+    getSummoner = async (req, res, next) => {
+        const { summonerName } = req.body;
+
+        try { 
+            const summoner = await this.matchesService.getSummoner(summonerName);
+
+            return res.status(200).json(summoner)
+        } catch (err){
+            return next (err);
+        }
+    }
+
+    saveRating = async (req, res, next) => {
+
+        try {
+            const result = await this.matchesService.saveRating();
+
+            res.status(200).send(result)
+        } catch (err) {
+            return next(err);
+        }
+    }
+
     getWinRatingByChamp = async (req, res, next) => {
         const { myChampionId, enemyChampionId } = req.params;
 

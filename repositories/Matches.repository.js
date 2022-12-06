@@ -24,6 +24,43 @@ class MatchesRepository {
         return result;
     };
 
+    getItemById = async (itemId) => {
+        const result = await Rating.findAll({
+            where: {
+                itemId: itemId,
+                pickRate: { [Op.gte]: 30 }
+            },
+            attributes: [
+                'championId',
+                'tier',
+                'itemId',
+                'totalMatch',
+                'pickRate',
+                'winRate',
+            ],
+            order: [['tier', 'DESC']]
+        })
+
+        return result;
+    }
+
+    getSummoner = async (summonerNameInsert) => {
+        const [result , metadata] = await sequelize.query(`
+        SELECT
+        matchTier,
+        championId,
+        championName,
+        itemList,
+        summonerName,
+        win
+        FROM MatchData md
+        WHERE 
+        summonerName = '${summonerNameInsert}'
+        `)
+
+        return result;
+    }
+
     getEnemyById = async (myChampionId, enemyChampionId) => {
         //시퀄라이즈 사용시 같은 테이블을 조인할 수 없는 문제가있었고 직접적으로 쿼리문으로 같은 테이블을 조인시킴
         // studio 3T에서는 동일한 컬럼을 조인해와도 같이 표기할수 있었지만 vs코드에선 동일한 컬럼명을 가진것들은 키가 중복돼서 원하던 결과값이 나오지않았음
