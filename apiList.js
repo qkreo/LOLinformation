@@ -67,8 +67,7 @@ class API {
                 return console.log(error.message);
             });
             if (typeof summoner === 'object') {
-                summoner.tier = tierList.tier;
-                console.log(`=====서머너${i}번째${summoner.tier} ${summoner.name}====`);
+                summoner.tier = tierList.tier;               
                 // summoner.rank = tierList.entries[i].rank
                 // summoner.leaguePoints = tierList.entries[i].leaguePoints
                 // summoner.wins = tierList.entries[i].wins

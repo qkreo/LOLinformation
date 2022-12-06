@@ -104,15 +104,17 @@ class SaveDataService {
                         break;
                 }
             } else {
-
                 const summoner = await this.api.getSummoner(
                     leagueSummonerList,
                     i
                 );
                 if (typeof summoner === 'object') {
-                    i++;
-                    this.getMatchList(summoner);
-                    // i++;  밑에 겟 매치리스트는 호출했으나 i++가 안되고 계속 같은소환사를 호출했음 잘되다가 ?? 왜?? 
+                    i++; // i++ 의 위치와 관계없이 간혹 i++가 되지않고 인터벌이 계속 같은 소환사를 호출함
+                    this.getMatchList(summoner)
+                    console.log(`=====서머너${i}번째${summoner.tier} ${summoner.name}====`);
+                    return 
+                    // i++;  밑에 겟 매치리스트는 호출했으나 i++가 안되고 계속 같은소환사를 호출했음 잘되다가 ?? 왜??
+                    
                 }
                 else {
                     return console.log('API 호출실패로 대기');
@@ -129,8 +131,11 @@ class SaveDataService {
                 const findMatch = await this.saveDataRepository.findMatchList(
                     match.matchId
                 );
-                if (!findMatch) return this.saveDataRepository.saveMatchList(match);
-                else return 
+                if (!findMatch) {
+                    console.log(match)
+                    this.saveDataRepository.saveMatchList(match);
+                    return
+                } else return 
             });
         } else {
             return console.log('API 호출실패로 대기');
@@ -159,12 +164,7 @@ class SaveDataService {
                     );
                     switch (typeof matchData) {
                         case "string" :
-                            if(matchData === 'Request failed with status code 404' ) {
-                                await this.saveDataRepository.deleteMatchList(
-                                    matchList[i].matchId
-                                );
-                                console.log(matchData);    
-                            }
+                            console.log(matchData);    
                             i++
                             break;
                         default:
@@ -185,6 +185,8 @@ class SaveDataService {
                                 const unixDate = `${matchData.info.gameStartTimestamp}`;
                                 const realDate = unixDate.substring(0, 10);
                                 const matchDate = new Date(realDate * 1000);
+                                
+                                const summonerName = data.summonerName.split(' ').join('');
 
                                 this.saveDataRepository.saveMatchData({
                                     matchId: matchData.metadata.matchId,
@@ -196,7 +198,7 @@ class SaveDataService {
                                     itemList: textItemList,
                                     summoner1Id: data.summoner1Id,
                                     summoner2Id: data.summoner2Id,
-                                    summonerName: data.summonerName,
+                                    summonerName: summonerName,
                                     teamPosition: data.teamPosition,
                                     win: data.win,
                                 });
@@ -243,7 +245,7 @@ class SaveDataService {
         for(let i = 0; i < championData.length; i++){
             await this.saveRating(i)
           }
-        console.log("레이팅 저장 완료")  
+        this.getLeagueList('challenger')  
   }
   
     saveRating = async (i) => {
