@@ -334,7 +334,7 @@ class SaveDataService {
 
             return calculateResult
         })
-
+        
         return rateResult
     }
 }
