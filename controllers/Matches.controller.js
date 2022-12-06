@@ -1,41 +1,17 @@
 const MatchesService = require('../services/Matches.service.js');
+const { sequelize, Summoners, MatchData, MatchList, Rating } = require('../models');
 
 class MatchesController {
     matchesService = new MatchesService();
 
-    getMatchData = async (req, res, next) => {
-        const { division, tier, page } = req.query;
-        try {
-            if (division && tier && page) {
-                
-                const summoner = await this.matchesService.getTierList(
-                    division,
-                    tier.toUpperCase(),
-                    page
-                );
-                return res.json({message:summoner});
-            } else {
-                
-                const summoner = await this.matchesService.getLeagueList();
+    findMatchData = async (req,res,next) => {
+        const {championId} = req.params;
 
-                return res.json({message:summoner});
-            }
-        } catch (err) {
-            return next(err);
-        }
-    };
+        const result = await MatchData.findAll({ logging: false,where: { championId } });
 
-    saveMatchData = async (req, res, next) => {
-        try {
-            const { tier } = req.params;
-            const list = await this.matchesService.saveMatchData(
-                tier.toUpperCase()
-            );
-            return res.status(200).send(list);
-        } catch (err) {
-            return next(err);
-        }
-    };
+        res.status(200).send(result);
+
+       };
 
     getEnemyById = async (req, res, next) => {
         try {
@@ -65,11 +41,23 @@ class MatchesController {
         try {
             const item = await this.matchesService.getItem(itemId);
 
-            return res.status(200).send(item);
+            return res.status(200).json(item);
         } catch (err) {
             return next(err);
         }
-    }; 
+    };
+
+    getSummoner = async (req, res, next) => {
+        const { summonerName } = req.body;
+
+        try { 
+            const summoner = await this.matchesService.getSummoner(summonerName);
+
+            return res.status(200).json(summoner)
+        } catch (err){
+            return next (err);
+        }
+    }
 
     saveRating = async (req, res, next) => {
 
