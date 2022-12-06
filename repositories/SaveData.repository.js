@@ -3,13 +3,13 @@ const { sequelize, Summoners, MatchData, MatchList, Rating } = require('../model
 const { Op } = require('sequelize');
 
 class SaveDataRepository {
-
+    //불필요한 로그가 쌓이지 않도록 find 메소드의 로그는 로깅되지않게 수정
     findMatchList = async (matchId) => {
         return await MatchList.findOne({ logging: false,where: { matchId } });
     };
 
     saveMatchList = async (matchId) => {
-        return await MatchList.create(matchId);
+        return await MatchList.create(matchId,{logging: false});
     };
 
     deleteMatchList = async (matchId) => {
