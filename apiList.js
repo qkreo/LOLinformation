@@ -124,7 +124,6 @@ class API {
                 return response.data; 
             })
             .catch((error) => {
-                console.log(error.message);
                 return error.message;
             });
             if (typeof matchData === 'object') {
