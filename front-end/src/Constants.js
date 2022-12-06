@@ -1,0 +1,1 @@
+export const RIOTGAMES_API = 'https://kr.api.riotgames.com/lol'
