@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios'
+import EnemyChampionItem from "./EnemyChampionItem";
 
-function TabContent({ tab, myChapId, enemyId }) {
+function TabContent({ tab, myChampionId, enemyTeam, enemy }) {
     
-    let [fade, setFade] = useState("");
+    const [fade, setFade] = useState("");
+    
+
     
     //천천히 나타나는 애니메이션
     useEffect(() => {
@@ -15,24 +18,23 @@ function TabContent({ tab, myChapId, enemyId }) {
         };
     }, [tab]);
     
-    
-    useEffect (() => {
-        
-        const responseData = async () => {
-            await axios.get(`http://localhost:5000/match/${myChapId}/${enemyId[tab].championId}`)
-            let res = ''
-            return res.data
+    const enemyChampionItem = enemyTeam.map((enemy, i ) => {
+        switch (tab) {
+            case i:
+                return (
+                    <div className={`start ${fade} nav-box-margin`}>
+                        <EnemyChampionItem tab={tab} myChampionId={myChampionId} enemyTeam={enemyTeam} enemy = {enemy}/>
+                    </div>
+                )
         }
-        responseData()
-        
-    },[myChapId, enemyId, tab])
+    })
     
     return (
-        <div className={`start ${fade} nav-box-margin`}>
-            <div> ㅁㄴㅇㄻㄴㄹ </div>
-            
-        </div>
-    );
+        <>
+            {enemyChampionItem}
+        </>
+    )
+    
 }
 
 export default TabContent ;

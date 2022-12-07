@@ -20,7 +20,7 @@ function ChampionInfo({ participant }) {
     const perkSub = SUB.find(perk=> perk.id === participant.perks.perkSubStyle)?.image;
 
     return (
-        <div className="align-a-cross">
+        <div>
             <div className={participant.teamId === 100 ? "team-color" : "team-color2"}>
                 
                 <img
