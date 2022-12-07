@@ -2,8 +2,26 @@ const MatchesRepository = require('../repositories/Matches.repository');
 
 const championData = require('../dataInfo/champId.js');
 const coreItemList = require('../dataInfo/item.js')
-
 const API = require('../apiList');
+
+const redis = require('redis');
+const dotenv = require('dotenv');
+
+dotenv.config(); // env환경변수 파일 가져오기
+
+const redisClient = redis.createClient({
+   url: `redis://${process.env.REDIS_USERNAME}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+   legacyMode: true, // 반드시 설정 !!
+});
+redisClient.on('connect', () => {
+   console.info('Redis connected!');
+});
+redisClient.on('error', (err) => {
+   console.error('Redis Client Error', err);
+});
+redisClient.connect().then(); // redis v4 연결 (비동기)
+const redisCli = redisClient.v4;
+redisCli.flushAll() // redis db 전체 초기화
 
 class MatchesService {
     constructor() {
@@ -26,6 +44,13 @@ class MatchesService {
     };
 
     getWinRatingByChamp = async (myChampionId, enemyChampionId) => {
+
+        const myVsEnemy = await redisCli.get(`${myChampionId}and${enemyChampionId}`) // // DB 이용 보다 6배이상의 로딩속도 감소를 보임
+
+        if(myVsEnemy !== null) {
+            const  myVsEnemyData = JSON.parse(myVsEnemy)
+            return myVsEnemyData
+        } else {
         const matchData = await this.matchesRepository.getEnemyById(
             myChampionId, enemyChampionId
         );
@@ -58,7 +83,13 @@ class MatchesService {
         
         itemByEnemyResult.sort((a, b) => b.pickRate - a.pickRate)
 
+        const data = JSON.stringify(itemByEnemyResult)
+
+        await redisCli.set(`${myChampionId}and${enemyChampionId}`,data)
+        await redisCli.expire(`${myChampionId}and${enemyChampionId}`,10) // 만료 시간 설정 int 는 sec 
+
         return itemByEnemyResult
+    }
     };
 
     getItem = async(itemId) => {
@@ -75,7 +106,12 @@ class MatchesService {
 
         const summonerNameInsert = summonerName.replace(' ', '').trim()
 
-        const summoner = await this.matchesRepository.getSummoner(summonerNameInsert)
+        const mostData = await redisCli.get(summonerNameInsert) // DB 이용 보다 6배이상의 로딩속도 감소를 보임
+        if(mostData !== null) {
+            const summonerMost = JSON.parse(mostData)
+            return summonerMost
+        } else {
+            const summoner = await this.matchesRepository.getSummoner(summonerNameInsert)
 
         const summonerWinRateByChamp = championData.map((champ)=> {
             let champPickCount = 0;
@@ -128,10 +164,15 @@ class MatchesService {
         const rateResultFilter = summonerWinRateByChamp.filter(data => data.totalMatch !== 0)
 
         rateResultFilter.sort((a,b) => b.totalMatch - a.totalMatch)
+        const data = JSON.stringify(rateResultFilter)
+
+        await redisCli.set(summonerNameInsert,data) 
+        await redisCli.expire(summonerNameInsert,10) // 만료 시간 설정 int 는 sec 
 
         return rateResultFilter
         
-    }
+        }
+    }  
 }
 
 

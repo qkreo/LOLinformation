@@ -71,7 +71,7 @@ class SaveDataService {
             ); // 7000명 너무많아서 일단 700명으로 제한
 
         const saveMatchInterval = setInterval(async () => {
-            if (i === leagueSummonerList.entries.length) {
+            if (i >= leagueSummonerList.entries.length) {
                 console.log('=============저장종료=============');
                 clearInterval(saveMatchInterval);
                 switch (leagueSummonerList.tier) {
@@ -115,16 +115,109 @@ class SaveDataService {
                     i++; // i++ 의 위치와 관계없이 간혹 i++가 되지않고 인터벌이 계속 같은 소환사를 호출함
                     this.getMatchList(summoner);
                     console.log(
-                        `${leagueSummonerList.entries.length}명의 서머너 중 ${i}번째${summoner.tier} ${summoner.name}`
+                        `${leagueSummonerList.entries.length}명의 서머너 중 ${i}번째${leagueSummonerList.tier} ${summoner.name}`
                     );
                     return;
-                    // i++;  밑에 겟 매치리스트는 호출했으나 i++가 안되고 계속 같은소환사를 호출했음 잘되다가 ?? 왜??
                 } else {
                     return console.log('API 호출실패로 대기');
                 }
             }
         }, 1300);
     };
+
+    getAccount = async (summonerName) => {
+        const summoner = await this.api.getSummonerAccount(summonerName)
+        if (typeof summoner === 'object') {
+            this.getAccountMatchList(summoner)
+            return "첫 데이터수집은 시간이 소요됩니다"
+        }
+        else return summoner
+    }
+
+    getAccountMatchList = async (summoner) => {
+        const matchList = await this.api.getMatchList(summoner);
+
+        if (typeof matchList === 'object') {
+            matchList.map(async (match) => {
+                const findMatch = await this.saveDataRepository.findMatchList(
+                    match.matchId
+                );
+                if (!findMatch) {
+                    this.saveDataRepository.saveMatchList(match);
+                    return;
+                }               
+            });
+        } else {
+            return console.log('API 호출실패로 대기');
+        }
+        this.saveSummonerMatchData(matchList) 
+    };
+
+    saveSummonerMatchData = async (matchList) => {
+        console.log(matchList.length)
+            let i = 0;
+            const saveMatchInterval = setInterval(async () => {
+                if (i >= matchList.length) {
+                    console.log('=============매치저장종료=============');
+                    clearInterval(saveMatchInterval);
+                } else {
+                    const findMatchId = await this.saveDataRepository.findMatchById(
+                        matchList[i].matchId
+                    );
+                    if (!findMatchId) {
+                        const matchData = await this.api.findMatchData(matchList[i]);
+                        console.log(matchData.metadata.matchId,"저장")
+                        switch (typeof matchData) {
+                            case 'string':
+                                console.log(matchData);
+                                break;
+                            default:
+                                matchData.info.participants.map((data) => {
+                                    const itemList = [
+                                        data.item0,
+                                        data.item1,
+                                        data.item2,
+                                        data.item3,
+                                        data.item4,
+                                        data.item5,
+                                    ];
+                                    const result = itemList.filter((data) => {
+                                        return data !== 0;
+                                    });
+                                    const textItemList = result.join();
+    
+                                    const unixDate = `${matchData.info.gameStartTimestamp}`;
+                                    const realDate = unixDate.substring(0, 10);
+                                    const matchDate = new Date(realDate * 1000);
+    
+                                    const summonerName = data.summonerName
+                                        .split(' ')
+                                        .join('');
+                                    
+                                    this.saveDataRepository.saveMatchData({
+                                        matchId: matchData.metadata.matchId,
+                                        matchTier: matchData.tier,
+                                        matchDate: matchDate,
+                                        championId: data.championId,
+                                        championName: data.championName,
+                                        championTransform: data.championTransform,
+                                        itemList: textItemList,
+                                        summoner1Id: data.summoner1Id,
+                                        summoner2Id: data.summoner2Id,
+                                        summonerName: summonerName,
+                                        teamPosition: data.teamPosition,
+                                        win: data.win,
+                                    });
+                                });
+                                break;
+                        }
+                    } else {
+                        console.log(matchList[i].matchId,"이미 저장됨")
+                    }
+                    i++
+                }
+            }, 50);                
+    }
 
     getMatchList = async (summoner) => {
         const matchList = await this.api.getMatchList(summoner);
@@ -152,7 +245,7 @@ class SaveDataService {
         console.log(matchList.length, '매치리스트');
 
         const saveMatchInterval = setInterval(async () => {
-            if (i === matchList.length) {
+            if (i >= matchList.length) {
                 console.log('=============매치저장종료=============');
                 clearInterval(saveMatchInterval);
             } else {
@@ -206,6 +299,7 @@ class SaveDataService {
                                     win: data.win,
                                 });
                             });
+                            i++;
                             break;
                     }
                 } else {
@@ -237,7 +331,7 @@ class SaveDataService {
                             this.saveRatings();
                     }
                 }
-                i++;
+
             }
         }, 1200);
     };

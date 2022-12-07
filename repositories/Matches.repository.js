@@ -45,6 +45,7 @@ class MatchesRepository {
     }
 
     getSummoner = async (summonerNameInsert) => {
+
         const [result , metadata] = await sequelize.query(`
         SELECT
         matchTier,

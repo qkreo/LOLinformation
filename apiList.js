@@ -80,6 +80,41 @@ class API {
     
     };
 
+    getSummonerAccount = async (summonerName) => {
+        const summonerAccount = await axios({
+            method: 'get',
+            url: `https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`,
+            headers: headers,
+        })
+            .then((response) => {
+                return response.data;
+            })
+            .catch((error) => {
+                console.log(error.message);
+                return error.message
+            });
+        console.log(summonerAccount)
+        const [summonertier] = await axios({
+            method: 'get',
+            url: `https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerAccount.id}`,
+            headers: headers,
+        })
+            .then((response) => {
+                return response.data;
+            })
+            .catch((error) => {
+                console.log(error.message);
+                return error.message
+            });
+            if(summonertier === undefined) {
+                return "랭크게임 전적이 없습니다"
+            } else {
+                summonerAccount.tier = summonertier.tier
+                return summonerAccount;
+            }
+
+    };
+
     getMatchList = async (summoner) => {
         const matchList = await axios({
             method: 'get',
