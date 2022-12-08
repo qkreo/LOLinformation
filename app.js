@@ -3,8 +3,9 @@ const app = express();
 const port = 5000;
 const http = require('http').createServer(app);
 const cors = require('cors')
+const path = require('path')
 
-app.use(express.static("assets"));
+app.use(express.static( path.join(__dirname,'build')));
 
 const Router = require('./routes/index');
 const errorHandlerMiddleware = require('./middlewares/error_handler_middleware');

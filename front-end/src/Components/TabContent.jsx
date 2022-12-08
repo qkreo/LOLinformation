@@ -6,8 +6,6 @@ function TabContent({ tab, myChampionId, enemyTeam, enemy }) {
     
     const [fade, setFade] = useState("");
     
-
-    
     //천천히 나타나는 애니메이션
     useEffect(() => {
         setTimeout(() => {
