@@ -2,7 +2,19 @@ const SaveDataService = require('../services/SaveDatas.service.js');
 
 class SaveDataController {
     saveDataService = new SaveDataService();
+    getSummoner = async (req,res,next) => {
+        try {
+            const { summonerName } = req.body; // 띄어쓰기가 정확해야함 
 
+            const summoner = await this.saveDataService.getAccount(summonerName);
+
+            return res.json({message:summoner});
+
+        } catch (err) {
+            return next(err);
+        }
+
+    }
     getMatchList = async (req, res, next) => {
         const { division, tier, page } = req.query;
         try {

@@ -2,8 +2,8 @@ const MatchesRepository = require('../repositories/Matches.repository');
 
 const championData = require('../dataInfo/champId.js');
 const coreItemList = require('../dataInfo/item.js')
-
 const API = require('../apiList');
+const redisCli = require('../redis')
 
 class MatchesService {
     constructor() {
@@ -26,6 +26,13 @@ class MatchesService {
     };
 
     getWinRatingByChamp = async (myChampionId, enemyChampionId) => {
+
+        const myVsEnemy = await redisCli.get(`${myChampionId}and${enemyChampionId}`) // // DB 이용 보다 6배이상의 로딩속도 감소를 보임
+
+        if(myVsEnemy !== null) {
+            const  myVsEnemyData = JSON.parse(myVsEnemy)
+            return myVsEnemyData
+        } else {
         const matchData = await this.matchesRepository.getEnemyById(
             myChampionId, enemyChampionId
         );
@@ -58,24 +65,27 @@ class MatchesService {
         
         itemByEnemyResult.sort((a, b) => b.pickRate - a.pickRate)
 
+        const data = JSON.stringify(itemByEnemyResult)
+
+        await redisCli.set(`${myChampionId}and${enemyChampionId}`,data)
+        await redisCli.expire(`${myChampionId}and${enemyChampionId}`,10) // 만료 시간 설정 int 는 sec 원래대로라면 전적갱신을 눌렀을때 캐시데이터도 갱신을 해야함
+
         return itemByEnemyResult
-    };
-
-    getItem = async(itemId) => {
-        const item = await this.matchesRepository.getItemById(itemId)
-
-        item.map((data) => {
-            
-        })
-
-        return item
     }
+    };
 
     getSummoner = async (summonerName) => {
 
-        const summonerNameInsert = summonerName.replace(' ', '').trim()
+        const summonerNameInsert = await summonerName.replace(/ /gi, '').trim()
+        
+        console.log(summonerNameInsert)
 
-        const summoner = await this.matchesRepository.getSummoner(summonerNameInsert)
+        const mostData = await redisCli.get(summonerNameInsert) // DB 이용 보다 6배이상의 로딩속도 감소를 보임
+        if(mostData !== null) {
+            const summonerMost = JSON.parse(mostData)
+            return summonerMost
+        } else {
+            const summoner = await this.matchesRepository.getSummoner(summonerNameInsert)
 
         const summonerWinRateByChamp = championData.map((champ)=> {
             let champPickCount = 0;
@@ -128,10 +138,15 @@ class MatchesService {
         const rateResultFilter = summonerWinRateByChamp.filter(data => data.totalMatch !== 0)
 
         rateResultFilter.sort((a,b) => b.totalMatch - a.totalMatch)
+        const data = JSON.stringify(rateResultFilter)
+
+        await redisCli.set(summonerNameInsert,data) 
+        await redisCli.expire(summonerNameInsert,10) // 만료 시간 설정 int 는 sec 
 
         return rateResultFilter
         
-    }
+        }
+    }  
 }
 
 
