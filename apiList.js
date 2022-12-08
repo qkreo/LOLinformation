@@ -148,7 +148,7 @@ class API {
     };
 
     findMatchData = async (match) => {
-
+        console.log("매치리스트",match)
         const matchData = await axios({
             method: 'get',
             url: `${asiaUrl}match/v5/matches/${match.matchId}`,

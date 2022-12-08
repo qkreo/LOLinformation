@@ -24,7 +24,7 @@ class SaveDataRepository {
     };
 
     findMatchById = async (matchId) => {
-        return await MatchData.findOne({logging: false, where: { matchId } });
+        return await MatchData.findOne({where: { matchId },logging: false});
     };
 
     saveMatchData = async (matchData) => {
