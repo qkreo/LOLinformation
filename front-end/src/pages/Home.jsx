@@ -33,8 +33,8 @@ function Home() {
             </InputGroup>
             
             {/*챔프 전체 가져오는 components*/}
-            {/*<ChampionList/>*/}
-            
+            <div className='title-location'>**챔피언별 아이템 추천**</div>
+            <ChampionList/>
             
         </div>
     );

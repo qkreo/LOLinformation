@@ -1,30 +1,26 @@
 import { useState, useEffect, useMemo } from "react";
 import React from "react";
-import data from "../data/champdata";
-import { Nav } from "react-bootstrap";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { RIOTGAMES_API } from "../Constants";
 import ChampionInfo from "../Components/ChampionInfo";
 import Navibar from "../Components/Navibar";
-import Enemychampioninfo from "../Components/필요없는거 지울것";
-import TabContent from "../Components/TabContent";
-import EnemyTeamChampions from "../Components/EnemyTeamChampions";
+
+import EnemyChampionNavBar from "../Components/EnemyChampionNavBar";
 
 
-
-
-const API_KEY = "RGAPI-a522ff7a-99fe-4a44-9986-dd8b63d327c8";
+const API_KEY = "RGAPI-cccad7e6-c1f2-4fcb-ad30-da510bf03898";
 
 function User() {
     const urlParams = useParams();
     const [load, setLoad] = useState(false);
     const [summonerId, setSummonerId] = useState();
     const [ingameData, setIngameData] = useState();
-    const [myChapId, setMyChapId] = useState('')
-    const [enemyId, setEnemyId] = useState([])
-    const [tab, setTab] = useState(0)
+    const [myChampionId, setMyChampionId] = useState('')
+    const [enemyTeam, setEnemyTeam] = useState([])
     
+    
+    //가져온 summonername으로 summonerid 가져오는 거
     useEffect(() => {
         if ( !urlParams.name ) {
             return;
@@ -46,6 +42,8 @@ function User() {
         getRiotUserID();
     }, [urlParams]);
     
+    
+    //위에서 가져온 summonerid로 ingamedata 가져오는 거
     useEffect(() => {
         if ( !summonerId ) {
             return;
@@ -70,7 +68,6 @@ function User() {
     }, [summonerId]);
     
     
-    
     const components = useMemo(() => {
         if ( !load ) {
             return "정보를 가져오는 중입니다.";
@@ -82,13 +79,13 @@ function User() {
             return "현재 게임 중이 아닙니다.";
         }
 
-        let ingamedata_teamBlue = ingameData?.participants?.filter( function (a) {
+        let inGameDataTeamBlue = ingameData?.participants?.filter( function (a) {
             if ( a.teamId === 100 ) {
                 return true ;
             }
         })
     
-        let ingamedata_teamRed = ingameData?.participants?.filter( function (a) {
+        let inGameDataTeamRed = ingameData?.participants?.filter( function (a) {
             if ( a.teamId === 200) {
                 return true ;
             }
@@ -102,7 +99,7 @@ function User() {
             }
         })
     
-        ingamedata_teamRed.sort(function (a, b) {
+        inGameDataTeamRed.sort(function (a, b) {
             if ( a.summonerName === urlParams.name ) {
                 return -1;
             } else {
@@ -110,7 +107,7 @@ function User() {
             }
         })
     
-        ingamedata_teamBlue.sort(function (a, b) {
+        inGameDataTeamBlue.sort(function (a, b) {
             if ( a.summonerName === urlParams.name ) {
                 return -1;
             } else {
@@ -118,74 +115,25 @@ function User() {
             }
         })
         
-        setMyChapId(ingameData?.participants[0].championId)
         
+        setMyChampionId(ingameData?.participants[0].championId)
         
         if (ingameData?.participants[0].teamId === 200) {
-            setEnemyId(ingamedata_teamBlue)
+            setEnemyTeam(inGameDataTeamBlue)
             
             return (
-                ingamedata_teamRed.map((participant, index) =>
+                inGameDataTeamRed.map((participant, index) =>
                 <ChampionInfo key={index} participant={participant}/>)
             )
         } else {
-            setEnemyId(ingamedata_teamRed)
+            setEnemyTeam(inGameDataTeamRed)
             return (
-                ingamedata_teamBlue.map((participant, index) =>
+                inGameDataTeamBlue.map((participant, index) =>
                 <ChampionInfo key={index} participant={participant}/>)
             )
         }
     }, [load, ingameData]);
     
-    
-    const components2 = useMemo(() => {
-
-        let ingamedata_teamBlue = ingameData?.participants?.filter( function (a) {
-            if ( a.teamId === 100 ) {
-                return true ;
-            }
-        })
-    
-        let ingamedata_teamRed = ingameData?.participants?.filter( function (a) {
-            if ( a.teamId === 200) {
-                return true ;
-            }
-        })
-
-        if (ingameData?.participants[0].teamId === 200) {
-            return (
-                ingamedata_teamBlue.map((participant, index) => (
-                    <>
-                        <Nav variant="tabs" defaultActiveKey="link0">
-                            <div className="nav-box-margin">
-                                <Nav.Item onClick={() => { setTab(0) }}>
-                                    <Nav.Link eventKey="link0">
-                                        <EnemyTeamChampions key ={index} participant={participant}/>
-                                    </Nav.Link>
-                                </Nav.Item>
-                            </div>
-                        </Nav>
-                        {!!(myChapId && enemyId) && <TabContent myChapId = {myChapId} enemyId = {enemyId} tab = {tab}/>}
-                    </>
-                )))
-        } else if (ingameData?.participants[0].teamId === 100) {
-            return (
-                ingamedata_teamRed.map((participant, index) => (
-                    <>
-                        <Nav variant="tabs" defaultActiveKey="link0">
-                            <div className="nav-box-margin">
-                                <Nav.Item onClick={() => {setTab(0)}}>
-                                    <Nav.Link eventKey="link0">
-                                        <EnemyTeamChampions key ={index} participant = {participant}/>
-                                    </Nav.Link>
-                                </Nav.Item>
-                            </div>
-                        </Nav>
-                        {!!(myChapId && enemyId) && <TabContent myChapId = {myChapId} enemyId = {enemyId} tab = {tab}/>}
-                    </>
-                )))
-        }
-    }, [load, ingameData, myChapId, tab]);
     
     
     return (
@@ -194,7 +142,7 @@ function User() {
             <div className="display-flex">
                 <div>
                     {components}
-                    {components2}
+                    <EnemyChampionNavBar myChampionId = {myChampionId} enemyTeam={enemyTeam}/>
                 </div>
             </div>
         </div>
