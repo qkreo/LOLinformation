@@ -1,4 +1,4 @@
-const { sequelize, Summoners, MatchData, MatchList, Rating } = require('../models');
+const { sequelize, Rating } = require('../models');
 
 const { Op } = require('sequelize');
 
