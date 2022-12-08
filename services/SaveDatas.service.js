@@ -165,12 +165,12 @@ class SaveDataService {
                     const matchData = await this.api.findMatchData(
                         matchList[i]
                     );
-                    console.log(matchData.metadata.matchId, '저장');
                     switch (typeof matchData) {
                         case 'string':
                             console.log(matchData);
                             break;
                         default:
+                            console.log(matchData.metadata.matchId, '저장');
                             matchData.info.participants.map((data) => {
                                 const itemList = [
                                     data.item0,
@@ -208,12 +208,13 @@ class SaveDataService {
                                     win: data.win,
                                 });
                             });
+                            i++;
                             break;
                     }
                 } else {
+                    i++;
                     console.log(matchList[i].matchId, '이미 저장됨');
                 }
-                i++;
             }
         }, 200);
     };
