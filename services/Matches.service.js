@@ -81,7 +81,7 @@ class MatchesService {
     };
 
     getSummoner = async (summonerName) => {
-        const summonerNameInsert = summonerName.replace(' ', '').trim();
+        const summonerNameInsert = summonerName.replace(/ /gi, '').trim();
 
         const mostData = await redisCli.get(summonerNameInsert); // DB 이용 보다 6배이상의 로딩속도 감소를 보임
         if (mostData !== null) {

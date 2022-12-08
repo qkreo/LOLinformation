@@ -39,7 +39,7 @@ class MatchesController {
     };
 
     getSummoner = async (req, res, next) => {
-        const { summonerName } = req.body;
+        const { summonerName } = req.params;
 
         try {
             const summoner = await this.matchesService.getSummoner(

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import champdata from "../data/champdata";
 import spelldata from "../data/spelldata";
 import {MAIN , SUB } from "../data/perkdata";
+import { RIOTGAMES_API, API_KEY, SERVER_URL } from "../Constants";
 
 
 const IMAGE_RESOURCE_URL = 'https://ddragon.leagueoflegends.com/cdn/12.22.1/img'

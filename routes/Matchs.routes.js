@@ -6,7 +6,7 @@ const matchesController = new MatchesController()
 // /match/
 
 router.get('/enemy', matchesController.getEnemyById)
-router.get('/summoner', matchesController.getSummoner)
+router.get('/:summonerName', matchesController.getSummoner)
 router.get('/:championId', matchesController.getChampion)
 router.get('/:myChampionId/:enemyChampionId', matchesController.getWinRatingByChamp)
 

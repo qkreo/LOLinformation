@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Nav } from "react-bootstrap";
 import EnemyTeamChampionsFace from "./EnemyTeamChampionsFace";
 import TapContent from './TabContent'
+import { RIOTGAMES_API, API_KEY, SERVER_URL } from "../Constants";
 
 function EnemyChampionNavBar ({ myChampionId, enemyTeam }) {
     
