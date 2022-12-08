@@ -151,7 +151,7 @@ class SaveDataService {
     };
 
     saveSummonerMatchData = async (matchList) => {
-        console.log(matchList.length);
+        console.log("서머너 매치리스트",matchList.length);
         let i = 0;
         const saveMatchInterval = setInterval(async () => {
             if (i >= matchList.length) {
@@ -161,7 +161,7 @@ class SaveDataService {
                 const findMatchId = await this.saveDataRepository.findMatchById(
                     matchList[i].matchId
                 );
-                if (!findMatchId) {
+                if (findMatchId === null) {
                     const matchData = await this.api.findMatchData(
                         matchList[i]
                     );
@@ -215,7 +215,7 @@ class SaveDataService {
                 }
                 i++;
             }
-        }, 50);
+        }, 200);
     };
 
     getMatchList = async (summoner) => {
