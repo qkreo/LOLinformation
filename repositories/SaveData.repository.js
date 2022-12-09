@@ -1,15 +1,14 @@
-const { sequelize, Summoners, MatchData, MatchList, Rating } = require('../models');
-
-const { Op } = require('sequelize');
+const { sequelize, MatchData, MatchList, Rating } = require('../models');
 
 class SaveDataRepository {
-    //불필요한 로그가 쌓이지 않도록 find 메소드의 로그는 로깅되지않게 수정
-    findMatchList = async (matchId) => {
-        return await MatchList.findOne({ logging: false,where: { matchId } });
-    };
-
+ // 기존엔 find 메소드와 created 메소드를 분리해서 사용했으나 인터벌 사용 도중 동일한 matchId를 연속적으로 저장하려할시 sql충돌 에러가 뜨면서 서버가 다운됨
+ // 그래서 findOrCreate메소드로 변경하여 충돌 방지
     saveMatchList = async (matchId) => {
-        return await MatchList.create(matchId,{logging: false});
+        const [user, created] = await MatchList.findOrCreate({
+            where:{matchId:matchId.matchId},
+            defaults: {matchId:matchId.matchId,tier:matchId.tier},
+            logging: false});
+            return created
     };
 
     deleteMatchList = async (matchId) => {
@@ -30,9 +29,13 @@ class SaveDataRepository {
 
     saveMatchData = async (matchData) => {
         await MatchData.create(matchData,{logging: false});
+        // const [user, created] = await matchData.findOrCreate({
+        //     where:{matchId:matchData.matchId},
+        //     defaults: matchData,
+        //     logging: false});
+        //     return created
     };
 
-    
     getChampionById = async (championId, tier) => {
         const [result, metadata] = await sequelize.query(`
                     SELECT 
