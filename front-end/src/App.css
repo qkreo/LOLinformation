@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+.box-width{
+  width : 500px;
+}
+
 .nav-box-margin {
   margin-top : 20px;
 }
@@ -25,9 +29,6 @@
   margin-top : 10px ;
 }
 
-.오와열 {
-  display:flex;
-}
 
 .start {
   opacity : 0;
@@ -41,6 +42,12 @@
 .perk-box{
   border-radius: 60%;
   background-color: black;
+}
+
+.display-flex-width{
+  display : flex ;
+  width : 1000px;
+  flex-direction: row;
 }
 
 .display-flex{
@@ -127,6 +134,10 @@
   flex-direction: column;
   width : 30px ;
   height : 30px ;
+}
+
+.flex-direction-column {
+  flex-direction: row;
 }
 
 

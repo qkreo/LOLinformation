@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/static/css/main.425bd752.css",
+    "main.js": "/static/js/main.50c53623.js",
+    "static/js/787.22edae46.chunk.js": "/static/js/787.22edae46.chunk.js",
+    "static/media/Ahri_14.jpg": "/static/media/Ahri_14.438080a07009bcc1bd64.jpg",
+    "index.html": "/index.html",
+    "main.425bd752.css.map": "/static/css/main.425bd752.css.map",
+    "main.50c53623.js.map": "/static/js/main.50c53623.js.map",
+    "787.22edae46.chunk.js.map": "/static/js/787.22edae46.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.425bd752.css",
+    "static/js/main.50c53623.js"
+  ]
+}

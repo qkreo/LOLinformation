@@ -1,9 +1,9 @@
 import { Button, InputGroup, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Navibar from "../Components/Navibar";
 import { useState } from "react";
 import ChampionList from '../Components/ChampionList'
+import { RIOTGAMES_API, API_KEY } from "../Constants";
 
 
 //Home (메인 페이지)

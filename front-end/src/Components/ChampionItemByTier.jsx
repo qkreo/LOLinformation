@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import champdata from "../data/champdata";
 import axios from "axios";
+import { RIOTGAMES_API, API_KEY, SERVER_URL } from "../Constants";
 
 function ChampionItemByTier() {
     
@@ -34,8 +35,9 @@ function ChampionItemByTier() {
         
         async function getChampion() {
             try {
-                const res = await axios.get(`http://localhost:5000/match/${urlParamsChampion.id}`)
+                const res = await axios.get(`${SERVER_URL}/match/${urlParamsChampion.id}`)
                 if ( res?.data ) {
+                    console.log(res.data)
                     setChampionsItems(res.data)
                 }
             } catch ( e ) {
@@ -47,33 +49,33 @@ function ChampionItemByTier() {
         
     }, [urlParams])
     
-    
+
     
     for ( let i = 0 ; i < championItems.length ; i++)
         if (championItems[i].tier === "CHALLENGER" ) {  //티어가 챌린저 일때
             challengerData.push(championItems[i])
-            challengerData.sort((a, b) => b.winRate - a.winRate);
+
         }else if (championItems[i].tier === "GRANDMASTER" ) {
             grandMasterData.push(championItems[i])
-            grandMasterData.sort((a, b) => b.winRate - a.winRate);
+
         }else if (championItems[i].tier === "MASTER" ) {
             masterData.push(championItems[i])
-            masterData.sort((a, b) => b.winRate - a.winRate);
+
         }else if (championItems[i].tier === "DIAMOND" ) {
             diamondData.push(championItems[i])
-            diamondData.sort((a, b) => b.winRate - a.winRate);
+
         }else if (championItems[i].tier === "PLATINUM" ) {
             platinumData.push(championItems[i])
-            platinumData.sort((a, b) => b.winRate - a.winRate);
+
         }else if (championItems[i].tier === "GOLD" ) {
             goldData.push(championItems[i])
-            goldData.sort((a, b) => b.winRate - a.winRate);
+
         }else if (championItems[i].tier === "SILVER" ) {
             silverData.push(championItems[i])
-            silverData.sort((a, b) => b.winRate - a.winRate);
+
         }else if (championItems[i].tier === "BRONZE" ) {
             bronzeData.push(championItems[i])
-            bronzeData.sort((a, b) => b.winRate - a.winRate);
+
     }
     
     const challengerItemImg = challengerData.map((value, i) => {
