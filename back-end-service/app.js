@@ -7,7 +7,7 @@ const Router = require('./routes/index');
 const errorHandlerMiddleware = require('./middlewares/error_handler_middleware');
 const rateLimit = require("express-rate-limit"); 
 
-api.use(rateLimit({ 
+app.use(rateLimit({ 
     windowMs: 1*60*1000, 
     max: 100 
     })
