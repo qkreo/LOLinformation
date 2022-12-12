@@ -1,14 +1,14 @@
 version: "3"
 services:
+
   back-end-savedata:
     build:
       dockerfile: Dockerfile
       context: ./back-end-saveData
-    container_name: app_backend_saveData
+    container_name: backend_saveData
     volumes:
       - /app/node_modules
       - ./back-end-saveData:/app
-      - ./.env:/app
     ports: 
       - "5001:5000"
 
@@ -16,10 +16,28 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./back-end-service
-    container_name: app_backend_service
+    container_name: backend_service
     volumes:
       - /app/node_modules
       - ./back-end-service:/app
-      - ./.env:/app
     ports: 
       - "5000:5000"
+
+  # frontend:
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./front-end
+  #   volumes:
+  #     - /app/node_modules
+  #     - ./front-end:/app
+
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./cert:/etc/nginx/certs
