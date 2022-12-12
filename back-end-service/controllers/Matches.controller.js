@@ -37,9 +37,9 @@ class MatchesController {
             if(summoner.length < 1) {
                 axios.get(`https://sparta-pmg.shop/saveData/summonerMatchlist/${summonerName}`)
                 return res.status(201).send("현재 전적 데이터가 존재하지않는 소환사입니다. 데이터 계산 중이오니 잠시만 기다려주세요.")
+            } else {
+                return res.status(200).json(summoner);
             }
-
-            return res.status(200).json(summoner);
         } catch (err) {
             return next(err);
         }
