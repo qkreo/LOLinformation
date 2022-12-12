@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-
+import { RIOTGAMES_API, API_KEY, SERVER_URL } from "../Constants"
 
 function MyBestChampions({ summonerName }) {
     
@@ -14,7 +14,7 @@ function MyBestChampions({ summonerName }) {
         
         async function getBestChampions() {
             try {
-                const res = await axios.get(`http://localhost:5000/match/${summonerName}`
+                const res = await axios.get(`${SERVER_URL}/match/${summonerName}`
                 );
                 if ( res?.data ) {
                     setGetSummoner(res?.data);

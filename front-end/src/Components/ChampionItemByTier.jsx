@@ -35,7 +35,7 @@ function ChampionItemByTier() {
         
         async function getChampion() {
             try {
-                const res = await axios.get(`SERVER_URL/match/${urlParamsChampion.id}`)
+                const res = await axios.get(`${SERVER_URL}/match/${urlParamsChampion.id}`)
                 if ( res?.data ) {
                     console.log(res.data)
                     setChampionsItems(res.data)
