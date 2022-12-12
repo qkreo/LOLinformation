@@ -23,13 +23,13 @@ services:
     ports: 
       - "5000:5000"
 
-  frontend:
-    build:
-      dockerfile: Dockerfile
-      context: ./front-end
-    volumes:
-      - /app/node_modules
-      - ./front-end:/app
+  # frontend:
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./front-end
+  #   volumes:
+  #     - /app/node_modules
+  #     - ./front-end:/app
 
   nginx:
     restart: always
