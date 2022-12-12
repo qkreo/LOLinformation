@@ -84,7 +84,6 @@ class SaveDataService {
                         this.getTierList('I', 'DIAMOND', '1');
                         break;
                     case 'DIAMOND':
-                        // page = page + 2 실행시 문자열 + 2가 돼서 기대값은 1 + 2 = 3 이었지만 결과값은 12였음
                         page = Number(page) + 2;
                         this.getTierList('I', 'DIAMOND', page);
                         break;
@@ -111,7 +110,7 @@ class SaveDataService {
                     i
                 );
                 if (typeof summoner === 'object') {
-                    i++; // i++ 의 위치와 관계없이 간혹 i++가 되지않고 인터벌이 계속 같은 소환사를 호출함
+                    i++;
                     this.getMatchList(summoner);
                     console.log(
                         `${leagueSummonerList.entries.length}명의 서머너 중 ${i}번째${leagueSummonerList.tier} ${summoner.name}`
