@@ -4,7 +4,7 @@ class SaveDataController {
     saveDataService = new SaveDataService();
     getSummoner = async (req, res, next) => {
         try {
-            const { summonerName } = req.body; // 띄어쓰기가 정확해야함
+            const { summonerName } = req.params; // 띄어쓰기가 정확해야함
 
             const summoner = await this.saveDataService.getAccount(
                 summonerName

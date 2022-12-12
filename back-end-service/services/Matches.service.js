@@ -27,7 +27,6 @@ class MatchesService {
         const myVsEnemy = await redisCli.get(
             `${myChampionId}and${enemyChampionId}`
         ); // // DB 이용 보다 6배이상의 로딩속도 감소를 보임
-
         if (myVsEnemy !== null) {
             const myVsEnemyData = JSON.parse(myVsEnemy);
             return myVsEnemyData;
