@@ -71,7 +71,7 @@ class MatchesService {
             const data = JSON.stringify(itemByEnemyResult);
 
             await redisCli.set(`${myChampionId}and${enemyChampionId}`, data);
-            await redisCli.expire(`${myChampionId}and${enemyChampionId}`, 10); // 만료 시간 설정 int 는 sec 원래대로라면 전적갱신을 눌렀을때 캐시데이터도 갱신을 해야함
+            await redisCli.expire(`${myChampionId}and${enemyChampionId}`, 3600); // 만료 시간 설정 int 는 sec 원래대로라면 전적갱신을 눌렀을때 캐시데이터도 갱신을 해야함
 
             return itemByEnemyResult;
         }
@@ -169,7 +169,7 @@ class MatchesService {
             const data = JSON.stringify(rateResultFilter);
 
             await redisCli.set(summonerNameInsert, data);
-            await redisCli.expire(summonerNameInsert, 10); // 만료 시간 설정 int 는 sec
+            await redisCli.expire(summonerNameInsert, 3600); // 만료 시간 설정 int 는 sec
 
             return rateResultFilter;
         }

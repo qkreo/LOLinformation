@@ -27,7 +27,7 @@ class API {
                 console.log(error.message);
             });
 
-        return summonerList;
+        return summonerList; 
     };
 
     getTierList = async (division, tier, page) => {
@@ -94,18 +94,26 @@ class API {
                 return error.message
             });
         console.log(summonerAccount)
-        const [summonertier] = await axios({
+        const summonertier = await axios({
             method: 'get',
             url: `https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerAccount.id}`,
             headers: headers,
         })
             .then((response) => {
-                return response.data;
+                let result = [];
+                response.data.forEach((data) => {
+                    if(data.queueType === "RANKED_SOLO_5x5") {
+                        result.push(data)
+                    }
+                })
+
+                return result[0];
             })
             .catch((error) => {
                 console.log(error.message);
                 return error.message
             });
+
             if(summonertier === undefined) {
                 return "랭크게임 전적이 없습니다"
             } else {

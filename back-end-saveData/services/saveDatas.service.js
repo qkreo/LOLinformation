@@ -210,8 +210,8 @@ class SaveDataService {
                             break;
                     }
                 } else {
+                    console.log(i, matchList[i].matchId, '이미 저장됨');
                     i++;
-                    console.log(matchList[i].matchId, '이미 저장됨');
                 }
             }
         }, 200);

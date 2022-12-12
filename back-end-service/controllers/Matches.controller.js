@@ -1,3 +1,4 @@
+const axios = require('axios');
 const MatchesService = require('../services/Matches.service.js');
 
 class MatchesController {
@@ -27,11 +28,16 @@ class MatchesController {
 
     getSummoner = async (req, res, next) => {
         const { summonerName } = req.params;
-
+        
         try {
             const summoner = await this.matchesService.getSummoner(
                 summonerName
             );
+            
+            if(summoner.length < 1) {
+                axios.get(`http://localhost:5001/saveData/summonerMatchlist/${summonerName}`)
+                return res.status(201).send("현재 전적 데이터가 존재하지않는 소환사입니다. 데이터 계산 중이오니 잠시만 기다려주세요.")
+            }
 
             return res.status(200).json(summoner);
         } catch (err) {
