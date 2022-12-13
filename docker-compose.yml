@@ -2,6 +2,7 @@ version: "3"
 services:
 
   back-end-savedata:
+    restart: always
     build:
       dockerfile: Dockerfile
       context: ./back-end-saveData
@@ -13,6 +14,7 @@ services:
       - "5001:5000"
 
   back-end-service:
+    restart: always
     build:
       dockerfile: Dockerfile
       context: ./back-end-service
