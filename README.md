@@ -1,5 +1,5 @@
 
-# Project LOL-INFO
+# *Project LOL-INFO*
 
 ### 주요기능
 #### 1. 리그오브레전드 랭크 데이터 기반 챔피언별 아이템 추천 서비스
