@@ -18,6 +18,12 @@
   <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white">
 </div>
 
+### 프로젝트 설명
+
+Riot Open API를 이용한 리그오브레전드의 게임데이터 수집/ 분석
+
+약 500만+@의 매치데이터를 기반으로 통계적인 픽률/승률 데이터를 산출
+산출 데이터의 정확도를 높이기 위해 주기적인 데이터 수집
 
 ### 주요기능
 #### 1. 리그오브레전드 랭크 데이터 기반 챔피언별 아이템 추천 서비스
